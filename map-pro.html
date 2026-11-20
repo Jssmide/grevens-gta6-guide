@@ -12,7 +12,7 @@ input[type=search]{width:100%;border:1px solid #385063;background:#152839;color:
 input[type=search]:focus{border-color:var(--gold)}
 button{background:#203448;border:1px solid #486075;color:#eef4f8;border-radius:11px;padding:10px 12px}
 button.primary{background:var(--gold);color:#182331;border-color:var(--gold);font-weight:850}
-#categories{display:flex;gap:7px;overflow-x:auto;padding:9px 0 2px;scrollbar-width:none}#categories::-webkit-scrollbar{display:none}
+#searchResults{background:#1a2f42;border:1px solid #3d5668;border-radius:12px;padding:6px;margin:6px 0;max-height:190px;overflow:auto}#searchResults[hidden]{display:none}#searchResults button{display:block;text-align:left;width:100%;font-size:12px;border:none;border-bottom:1px solid #304558;border-radius:0;background:transparent;padding:10px}#categories{display:flex;gap:7px;overflow-x:auto;padding:9px 0 2px;scrollbar-width:none}#categories::-webkit-scrollbar{display:none}
 .cat{font-size:12px;white-space:nowrap;padding:7px 10px;background:#1a3042;border-radius:20px}.cat.selected{background:var(--gold);color:#11202d}
 #viewport{height:clamp(390px,64dvh,780px);overflow:hidden;position:relative;touch-action:none;background:#1e5369;-webkit-user-select:none;user-select:none}
 #world{position:absolute;left:0;top:0;width:1024px;height:1024px;transform-origin:0 0;will-change:transform}
@@ -38,7 +38,7 @@ button.primary{background:var(--gold);color:#182331;border-color:var(--gold);fon
 </style></head>
 <body><header><div class="topline"><h1>🗺️ GREVEN'S <em>LEONIDA PRO</em></h1><span class="tag">HEL KARTA · V12</span></div>
 <p class="sub">GTADB:s communitykarta över hela Leonida. Högupplösta kartlager laddas när du zoomar. Tryck på en markering för detaljer.</p>
-<div class="searchrow"><input type="search" id="search" placeholder="Sök område, garage, vapenbutik…"><button id="toggle" type="button">⚙️ Filter</button></div>
+<div class="searchrow"><input type="search" id="search" placeholder="Sök område, garage, vapenbutik…"><button id="toggle" type="button">⚙️ Filter</button></div><div id="searchResults" class="searchResults" hidden></div>
 <div id="categories"><button class="cat selected" data-quick="Alla">Alla</button><button class="cat" data-quick="Vapenbutiker">🔫 Vapen</button><button class="cat" data-quick="Garage">🚘 Garage</button><button class="cat" data-quick="Häleri">💰 Häleri</button><button class="cat" data-quick="Egna">⭐ Egna</button></div>
 <div class="tworow"><span id="notice">Kartmaterialet laddas…</span><button id="add" type="button" style="font-size:12px;padding:7px 10px">＋ Spara eget fynd</button></div></header>
 <div id="options"><div class="tworow"><strong style="font-size:13px">Välj kartlager</strong><span><button id="showAll" style="font-size:11px;padding:6px 8px">Alla</button> <button id="hideAll" style="font-size:11px;padding:6px 8px">Inga</button></span></div><div id="optionGrid"></div><p class="small">Vanliga vapenbutiker är inte samma sak som hemliga vapen. Ej koordinatverifierade fynd visas endast i guiden, inte på kartan.</p></div>
@@ -80,7 +80,8 @@ function visibleTiles(z){let [x0,x1,y0,y1]=bounds(z);let wanted=new Set(),layer=
 for(const child of [...layer.children])if(!wanted.has(child.dataset.tile))child.remove()}
 function drawTiles(){let level=zoomLevel();for(let z=3;z<=6;z++){layers[z].style.display=z<=level?'block':'none';if(z>level){layers[z].replaceChildren();continue}}if(level>=3)visibleTiles(level);if(level>=4)visibleTiles(level-1);updateQuality()}
 function updateQuality(){const z=zoomLevel(),current=z<=2?layers[z]:layers[z],count=z<=2?current.children.length:[...current.children].filter(e=>e.dataset.loaded==='1').length;const suffix=z>=3&&count===0?' · laddar högupplöst kartlager':' · bildrutor '+count;$('quality').textContent='Detaljnivå '+(z+1)+'/7'+suffix}
-function allVisible(){const q=$('search').value.toLocaleLowerCase('sv-SE').trim();return pins.concat(ownPins()).filter(p=>on.has(p.cat)&&(!q||(p.name+' '+(p.area||p.desc||'')+' '+p.cat).toLocaleLowerCase('sv-SE').includes(q)))}
+function allVisible(){const q=$('search').value.toLocaleLowerCase('sv-SE').trim();return pins.concat(ownPins()).filter(p=>(q||on.has(p.cat))&&(!q||(p.name+' '+(p.area||p.desc||'')+' '+p.cat).toLocaleLowerCase('sv-SE').includes(q)))}
+function searchList(){const q=$('search').value.trim();const box=$('searchResults');if(!q){box.hidden=true;box.replaceChildren();return}const match=allVisible().slice(0,10);box.hidden=false;box.innerHTML=match.length?match.map((p,i)=>'<button type="button" data-result="'+i+'">'+(symbols[p.cat]||'📍')+' '+esc(p.name)+' <small>· '+esc(p.cat)+'</small></button>').join(''):'<div class="small" style="padding:8px">Inga koordinatsatta platser matchar. Sök i huvudguiden för fler föremål.</div>';box.querySelectorAll('[data-result]').forEach(b=>b.onclick=()=>{const p=match[Number(b.dataset.result)];if(!p)return;scale=Math.max(scale,10);left=vp.clientWidth/2-p.x*10.24*scale;top=vp.clientHeight/2-p.y*10.24*scale;updateTransform();requestDraw();selectPin(p);box.hidden=true})}
 function renderPins(){markers.replaceChildren();const list=allVisible();const w=vp.clientWidth,h=vp.clientHeight;
  let used=new Set(),displayed=0;
  for(const p of list){let px=p.x*10.24*scale+left,py=p.y*10.24*scale+top;if(px< -50||py< -50||px>w+50||py>h+50)continue;
@@ -97,7 +98,7 @@ $('showAll').onclick=()=>{on=new Set(groups);renderOptions();renderPins()};
 $('hideAll').onclick=()=>{on.clear();renderOptions();renderPins()};
 $('optionGrid').onchange=e=>{const c=e.target.dataset.group;if(!c)return;e.target.checked?on.add(c):on.delete(c);renderOptions();renderPins()};
 document.querySelectorAll('[data-quick]').forEach(b=>b.onclick=()=>{const c=b.dataset.quick;on=c==='Alla'?new Set(groups):new Set([c]);renderOptions();renderPins()});
-$('search').oninput=renderPins;
+$('search').oninput=()=>{renderPins();searchList()};
 $('zin').onclick=()=>zoomBy(1.5);$('zout').onclick=()=>zoomBy(1/1.5);$('fit').onclick=fit;
 $('add').onclick=()=>{addMode=!addMode;$('add').classList.toggle('primary',addMode);$('notice').textContent=addMode?'Tryck på kartan för att sätta din nål':'';
 };
@@ -106,7 +107,7 @@ vp.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;point
 vp.addEventListener('pointerup',e=>{let click=addMode&&!downMoved&&pointers.size===1;pointers.delete(e.pointerId);if(click){let r=vp.getBoundingClientRect(),x=(e.clientX-r.left-left)/scale/1024*100,y=(e.clientY-r.top-top)/scale/1024*100;if(x>=0&&x<=100&&y>=0&&y<=100){let name=prompt('Vad hittade du?');if(name&&name.trim()){let note=prompt('Anteckning (valfritt)')||'';let p={id:'personal-'+Date.now(),name:name.trim().slice(0,90),desc:note.slice(0,500),cat:'Egna',x:+x.toFixed(4),y:+y.toFixed(4)};savePins([...ownPins(),p]);on.add('Egna');renderOptions();selectPin(p)}}addMode=false;$('add').classList.remove('primary');renderPins()}if(pointers.size===1){let x=[...pointers.values()][0];gesture={type:'pan',x:x.x,y:x.y,left,top}}else if(!pointers.size)gesture=null});
 vp.addEventListener('pointercancel',e=>{pointers.delete(e.pointerId);gesture=null});
 vp.addEventListener('wheel',e=>{e.preventDefault();let r=vp.getBoundingClientRect();zoomBy(e.deltaY<0?1.16:1/1.16,e.clientX-r.left,e.clientY-r.top)},{passive:false});
-async function fetchPois(){try{let r=await fetch('gtadb-pois.json?cache=12',{cache:'no-store'});if(!r.ok)throw Error('Data '+r.status);let j=await r.json();pins=(j.items||[]).filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y));renderPins()}catch(err){$('notice').textContent='Kartan är öppen. Platsmarkeringar kunde inte hämtas.'}}
+async function fetchPois(){try{let r=await fetch('gtadb-pois.json?cache=12',{cache:'no-store'});if(!r.ok)throw Error('Data '+r.status);let j=await r.json();pins=(j.items||[]).filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y));renderPins();searchList()}catch(err){$('notice').textContent='Kartan är öppen. Platsmarkeringar kunde inte hämtas.'}}
 window.addEventListener('resize',()=>{fit()});
 initializeUnderlays();renderOptions();fit();fetchPois();
 </script></body></html>
