@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "updated": "2026-11-20",
+  "coordinateSystem": "schematic-percent-0-100",
+  "notice": "Ungefärliga områdesmarkeringar, inte spelkoordinater. Uppdateras vid publicering.",
+  "pins": [
+    {
+      "id": "bigpine",
+      "name": "Cold War 556 – bunker",
+      "cat": "Vapen",
+      "x": 42,
+      "y": 26,
+      "chapter": 1,
+      "confidence": "Områdesmarkering",
+      "description": "Big Pine, norra Mariana County. Bunkerns sydvästra ingång, trälåda strax innanför. Kartnålen är ungefärlig och inte en exakt GPS-position i spelet.",
+      "source": "https://www.gtabase.com/gta-6/weapons/cold-war-556"
+    },
+    {
+      "id": "vicecity",
+      "name": "Vice City",
+      "cat": "Platser",
+      "x": 76,
+      "y": 57,
+      "chapter": 1,
+      "confidence": "Ungefärligt centrum",
+      "description": "Storstadsområdet Vice City. Kartpositionen i denna första översikt är schematisk.",
+      "source": "https://www.gtabase.com/gta-6/map/"
+    },
+    {
+      "id": "keys",
+      "name": "Leonida Keys",
+      "cat": "Platser",
+      "x": 61,
+      "y": 87,
+      "chapter": 1,
+      "confidence": "Ungefärligt område",
+      "description": "Övärlden söder om fastlandet. Exakta gränser och vägar visas först när vi använder licensierade kartbilder.",
+      "source": "https://www.gtabase.com/gta-6/map/"
+    },
+    {
+      "id": "gellhorn",
+      "name": "Port Gellhorn",
+      "cat": "Platser",
+      "x": 32,
+      "y": 63,
+      "chapter": 1,
+      "confidence": "Ungefärligt område",
+      "description": "Port Gellhorn. Områdesmarkering – inte exakt koordinat.",
+      "source": "https://www.gtabase.com/gta-6/map/"
+    },
+    {
+      "id": "kalaga",
+      "name": "Mount Kalaga",
+      "cat": "Platser",
+      "x": 31,
+      "y": 22,
+      "chapter": 1,
+      "confidence": "Ungefärligt område",
+      "description": "Mount Kalaga-regionen, schematiskt placerad.",
+      "source": "https://www.gtabase.com/gta-6/map/"
+    }
+  ]
+}
