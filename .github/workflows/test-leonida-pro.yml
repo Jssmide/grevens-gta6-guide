@@ -1,0 +1,36 @@
+name: Testa Leonida PRO i mobilwebbläsare
+on:
+  push:
+    paths:
+      - ".github/workflows/test-leonida-pro.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Installera Playwright Chromium
+        run: |
+          npm install --no-save playwright@1.57.0
+          npx playwright install --with-deps chromium
+      - name: Starta lokal webbserver och testa karta
+        run: |
+          python3 -m http.server 8000 >/tmp/greven-http.log 2>&1 &
+          sleep 3
+          node map-smoke.cjs || true
+      - name: Spara resultat och skärmbild i GitHub
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add map-smoke-result.json map-smoke-mobile.png || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Webbläsartest av Leonida PRO v12"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          test -f map-smoke-result.json
+          python3 -c "import json,sys; r=json.load(open('map-smoke-result.json')); print(json.dumps(r,indent=2)); sys.exit(0 if r['ok'] else 1)"
