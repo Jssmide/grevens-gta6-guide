@@ -36,7 +36,7 @@ button.primary{background:var(--gold);color:#182331;border-color:var(--gold);fon
 .small{font-size:12px;color:#b8c9d4}.tworow{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 #overlayInfo{position:absolute;inset:auto 10px 10px auto;font-size:11px;color:#e6ecf1}
 </style></head>
-<body><header><div class="topline"><h1>🗺️ GREVEN'S <em>LEONIDA PRO</em></h1><span class="tag">HEL KARTA · V12</span></div>
+<body><header><div class="topline"><h1>🗺️ GREVEN'S <em>LEONIDA PRO</em></h1><span class="tag">HEL KARTA · V12.1</span></div>
 <p class="sub">GTADB:s communitykarta över hela Leonida. Högupplösta kartlager laddas när du zoomar. Tryck på en markering för detaljer.</p>
 <div class="searchrow"><input type="search" id="search" placeholder="Sök område, garage, vapenbutik…"><button id="toggle" type="button">⚙️ Filter</button></div><div id="searchResults" class="searchResults" hidden></div>
 <div id="categories"><button class="cat selected" data-quick="Alla">Alla</button><button class="cat" data-quick="Vapenbutiker">🔫 Vapen</button><button class="cat" data-quick="Garage">🚘 Garage</button><button class="cat" data-quick="Häleri">💰 Häleri</button><button class="cat" data-quick="Egna">⭐ Egna</button></div>
@@ -55,7 +55,7 @@ const $=id=>document.getElementById(id),vp=$('viewport'),world=$('world'),marker
 const ranges=[[[0,0],[2,3]],[[1,1],[5,6]],[[2,2],[10,12]],[[4,4],[20,25]],[[8,8],[41,51]],[[17,17],[83,103]],[[34,34],[167,206]]];
 const symbols={Vapenbutiker:'🔫',Garage:'🚗',Häleri:'💰',Bostäder:'🏠',Flygplatser:'🛩️',Bensin:'⛽',Polis:'🚔',Sjukhus:'🏥',Landmärken:'📍',Egna:'⭐'};
 const groups=Object.keys(symbols);
-let on=new Set(['Vapenbutiker','Garage','Häleri','Egna']),pins=[],scale=1,left=0,top=0,minScale=0.4,maxScale=32;
+let on=new Set(['Vapenbutiker','Garage','Häleri','Egna']),pins=[],scale=1,left=0,top=0,minScale=0.4,maxScale=21;
 let pointers=new Map(),gesture=null,downMoved=false,addMode=false,selected=null;
 const storedKey='grevens-gta6-map-v7'; // bevara markeringar från föregående karta
 const fallbackCache=window.GREVEN_TILE_DATA||{};
@@ -68,7 +68,7 @@ function normalize(){const w=vp.clientWidth,h=vp.clientHeight,sz=1024*scale;left
 function updateTransform(){normalize();world.style.transform='translate3d('+left+'px,'+top+'px,0) scale('+scale+')'}
 function zoomBy(f,cx=vp.clientWidth/2,cy=vp.clientHeight/2){const before=scale;scale=Math.max(minScale,Math.min(maxScale,scale*f));const k=scale/before;left=cx-(cx-left)*k;top=cy-(cy-top)*k;updateTransform();requestDraw()}
 function fit(){minScale=Math.min(vp.clientWidth,vp.clientHeight)/1024;scale=minScale;left=(vp.clientWidth-1024*scale)/2;top=(vp.clientHeight-1024*scale)/2;updateTransform();requestDraw()}
-function zoomLevel(){return Math.max(0,Math.min(6,Math.ceil(Math.log2(Math.max(1,scale*2)))))}
+function zoomLevel(){return Math.max(0,Math.min(6,Math.ceil(Math.log2(Math.max(1,scale*Math.min(window.devicePixelRatio||2,3))))))}
 function bounds(z,margin=1){const w=vp.clientWidth,h=vp.clientHeight,step=256/Math.pow(2,z);let [[loX,loY],[hiX,hiY]]=ranges[z];return [Math.max(loX,Math.floor((-left/scale)/step)-margin),Math.min(hiX,Math.ceil(((w-left)/scale)/step)+margin),Math.max(loY,Math.floor((-top/scale)/step)-margin),Math.min(hiY,Math.ceil(((h-top)/scale)/step)+margin)]}
 function mountTile(layer,z,x,y,url,k,callback){const img=document.createElement('img');let sz=256/Math.pow(2,z);img.dataset.tile=k;img.alt='';img.decoding='async';img.style.left=x*sz+'px';img.style.top=y*sz+'px';img.style.width=(sz+0.1)+'px';img.style.height=(sz+0.1)+'px';img.onload=()=>{if(callback)callback(true)};img.onerror=()=>{if(callback)callback(false)};img.src=url;layer.appendChild(img);return img}
 function initializeUnderlays(){for(let z=0;z<=2;z++){const [[x0,y0],[x1,y1]]=ranges[z];for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){let base64=fallbackCache[z+'-'+y+'-'+x];if(base64)mountTile(layers[z],z,x,y,'data:image/jpeg;base64,'+base64,z+'-'+y+'-'+x)}}}
