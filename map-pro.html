@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#09141f"><title>Grevens Leonida PRO</title>
+<style>
+:root{color-scheme:dark;--bg:#09131e;--panel:#132333;--ink:#f1f6fa;--muted:#abbfce;--gold:#f3c284;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink)}button,input{font:inherit}button{cursor:pointer;touch-action:manipulation}button:active{filter:brightness(1.25)}
+header{position:relative;z-index:2;background:#0d1a27;padding:13px 14px;border-bottom:1px solid #324759}
+h1{margin:0;font-weight:850;font-size:19px;letter-spacing:-.025em}h1 em{font-style:normal;color:var(--gold)}.sub{color:var(--muted);font-size:12px;line-height:1.55;margin:7px 0 9px}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tag{font-size:10px;color:#ffdda8;font-weight:800;border:1px solid #735f43;border-radius:99px;padding:4px 7px;white-space:nowrap}
+.searchrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px}
+input[type=search]{width:100%;border:1px solid #385063;background:#152839;color:white;padding:11px 12px;border-radius:12px;outline:none;min-width:0}
+input[type=search]:focus{border-color:var(--gold)}
+button{background:#203448;border:1px solid #486075;color:#eef4f8;border-radius:11px;padding:10px 12px}
+button.primary{background:var(--gold);color:#182331;border-color:var(--gold);font-weight:850}
+#categories{display:flex;gap:7px;overflow-x:auto;padding:9px 0 2px;scrollbar-width:none}#categories::-webkit-scrollbar{display:none}
+.cat{font-size:12px;white-space:nowrap;padding:7px 10px;background:#1a3042;border-radius:20px}.cat.selected{background:var(--gold);color:#11202d}
+#viewport{height:clamp(390px,64dvh,780px);overflow:hidden;position:relative;touch-action:none;background:#1e5369;-webkit-user-select:none;user-select:none}
+#world{position:absolute;left:0;top:0;width:1024px;height:1024px;transform-origin:0 0;will-change:transform}
+.tileLayer,#markers{position:absolute;inset:0;pointer-events:none}.tileLayer img{position:absolute;display:block;pointer-events:none}
+#markers .marker{pointer-events:auto;position:absolute;width:38px;height:38px;padding:0;display:grid;place-items:center;border:2px solid #ffc57c;border-radius:50%;background:#10232fe9;box-shadow:0 2px 7px #071018b9;font-size:17px;transform-origin:center bottom}
+#markers .marker.own{border-color:#8bffd0}
+.zoom{position:absolute;top:10px;right:9px;display:grid;gap:7px;z-index:2}
+.zoom button{width:44px;height:44px;font-size:23px;padding:0;background:#102232ed;backdrop-filter:blur(8px)}
+.mapfoot{position:absolute;bottom:10px;left:10px;background:#102331e8;border:1px solid #526375;border-radius:12px;padding:8px 10px;font-size:11px;max-width:72%;line-height:1.5;pointer-events:none}
+#notice{font-size:11px;color:#d4ae7d}
+#details{background:#101f2c;padding:14px;border-top:1px solid #3a5161;min-height:145px}
+#details h2{font-size:16px;margin:0 0 8px}
+#details p{font-size:13px;line-height:1.55;color:#c7d6df;margin:5px 0 9px}
+#details a{color:#f6cc93;font-size:12px}
+#details .pill{display:inline-block;font-size:11px;color:#ffd19a;margin-bottom:7px;font-weight:750}
+.credits{font-size:10px;color:#8fa9b8;line-height:1.5;margin-top:9px}
+#options{background:#14293a;padding:11px 13px;border-top:1px solid #3b5464;display:none}
+#options.open{display:block}
+#optionGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}
+.check{display:flex;align-items:center;gap:6px;font-size:13px}.check input{width:18px;height:18px;accent-color:#ebba76}
+.small{font-size:12px;color:#b8c9d4}.tworow{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+#overlayInfo{position:absolute;inset:auto 10px 10px auto;font-size:11px;color:#e6ecf1}
+</style></head>
+<body><header><div class="topline"><h1>🗺️ GREVEN'S <em>LEONIDA PRO</em></h1><span class="tag">HEL KARTA · V12</span></div>
+<p class="sub">GTADB:s communitykarta över hela Leonida. Högupplösta kartlager laddas när du zoomar. Tryck på en markering för detaljer.</p>
+<div class="searchrow"><input type="search" id="search" placeholder="Sök område, garage, vapenbutik…"><button id="toggle" type="button">⚙️ Filter</button></div>
+<div id="categories"><button class="cat selected" data-quick="Alla">Alla</button><button class="cat" data-quick="Vapenbutiker">🔫 Vapen</button><button class="cat" data-quick="Garage">🚘 Garage</button><button class="cat" data-quick="Häleri">💰 Häleri</button><button class="cat" data-quick="Egna">⭐ Egna</button></div>
+<div class="tworow"><span id="notice">Kartmaterialet laddas…</span><button id="add" type="button" style="font-size:12px;padding:7px 10px">＋ Spara eget fynd</button></div></header>
+<div id="options"><div class="tworow"><strong style="font-size:13px">Välj kartlager</strong><span><button id="showAll" style="font-size:11px;padding:6px 8px">Alla</button> <button id="hideAll" style="font-size:11px;padding:6px 8px">Inga</button></span></div><div id="optionGrid"></div><p class="small">Vanliga vapenbutiker är inte samma sak som hemliga vapen. Ej koordinatverifierade fynd visas endast i guiden, inte på kartan.</p></div>
+<div id="viewport">
+<div id="world"><div class="tileLayer" id="underlay0"></div><div class="tileLayer" id="underlay1"></div><div class="tileLayer" id="underlay2"></div><div class="tileLayer" id="level3"></div><div class="tileLayer" id="level4"></div><div class="tileLayer" id="level5"></div><div class="tileLayer" id="level6"></div><div id="markers"></div></div>
+<div class="zoom"><button type="button" id="zin" aria-label="Zooma in">+</button><button type="button" id="zout" aria-label="Zooma ut">−</button><button type="button" id="fit" aria-label="Visa hela kartan">⤢</button></div>
+<div class="mapfoot"><strong>Hela Leonida</strong><div>Dra • nyp för att zooma • kartan stannar kvar här</div><div id="quality">Förbereder upplösning…</div></div></div>
+<div id="details"><h2>Tryck på en kartmarkering</h2><p>Här visas källförankrade platser och egna fynd. Du kan slå av alla nålar och bara titta på kartan.</p><div class="credits">Kartbilder och platsdata: © GTADB.ORG och bidragsgivare · CC BY 4.0. <a href="https://github.com/rolux/gtadb.org" rel="noopener" target="_blank">Källa och licens ↗</a>. Gemenskapsrekonstruktion; inte en officiell Rockstar-karta.</div></div>
+<script src="map-cache-a.js"></script><script src="map-cache-b.js"></script><script src="map-cache-c.js"></script><script src="map-cache-d.js"></script><script src="map-cache-e.js"></script>
+<script src="map-cache-f.js"></script><script src="map-cache-g.js"></script><script src="map-cache-h.js"></script><script src="map-cache-i.js"></script><script src="map-cache-j.js"></script><script src="map-cache-k.js"></script><script src="map-cache-l.js"></script><script src="map-cache-m.js"></script><script src="map-cache-n.js"></script><script src="map-cache-o.js"></script><script src="map-cache-p.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id),vp=$('viewport'),world=$('world'),markers=$('markers');
+const ranges=[[[0,0],[2,3]],[[1,1],[5,6]],[[2,2],[10,12]],[[4,4],[20,25]],[[8,8],[41,51]],[[17,17],[83,103]],[[34,34],[167,206]]];
+const symbols={Vapenbutiker:'🔫',Garage:'🚗',Häleri:'💰',Bostäder:'🏠',Flygplatser:'🛩️',Bensin:'⛽',Polis:'🚔',Sjukhus:'🏥',Landmärken:'📍',Egna:'⭐'};
+const groups=Object.keys(symbols);
+let on=new Set(['Vapenbutiker','Garage','Häleri','Egna']),pins=[],scale=1,left=0,top=0,minScale=0.4,maxScale=32;
+let pointers=new Map(),gesture=null,downMoved=false,addMode=false,selected=null;
+const storedKey='grevens-gta6-map-v7'; // bevara markeringar från föregående karta
+const fallbackCache=window.GREVEN_TILE_DATA||{};
+const layers={};for(let z=0;z<=6;z++)layers[z]=$(z<=2?'underlay'+z:'level'+z);
+const failSet=new Set(),retryToken=Math.floor(Date.now()/600000); // undvik ihållande cachade 404-svar
+function esc(t){return String(t||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function ownPins(){try{return JSON.parse(localStorage.getItem(storedKey)||'[]')}catch(e){return []}}
+function savePins(p){try{localStorage.setItem(storedKey,JSON.stringify(p))}catch(e){}}
+function normalize(){const w=vp.clientWidth,h=vp.clientHeight,sz=1024*scale;left=sz<=w?(w-sz)/2:Math.max(w-sz,Math.min(0,left));top=sz<=h?(h-sz)/2:Math.max(h-sz,Math.min(0,top))}
+function updateTransform(){normalize();world.style.transform='translate3d('+left+'px,'+top+'px,0) scale('+scale+')'}
+function zoomBy(f,cx=vp.clientWidth/2,cy=vp.clientHeight/2){const before=scale;scale=Math.max(minScale,Math.min(maxScale,scale*f));const k=scale/before;left=cx-(cx-left)*k;top=cy-(cy-top)*k;updateTransform();requestDraw()}
+function fit(){minScale=Math.min(vp.clientWidth,vp.clientHeight)/1024;scale=minScale;left=(vp.clientWidth-1024*scale)/2;top=(vp.clientHeight-1024*scale)/2;updateTransform();requestDraw()}
+function zoomLevel(){return Math.max(0,Math.min(6,Math.ceil(Math.log2(Math.max(1,scale*2)))))}
+function bounds(z,margin=1){const w=vp.clientWidth,h=vp.clientHeight,step=256/Math.pow(2,z);let [[loX,loY],[hiX,hiY]]=ranges[z];return [Math.max(loX,Math.floor((-left/scale)/step)-margin),Math.min(hiX,Math.ceil(((w-left)/scale)/step)+margin),Math.max(loY,Math.floor((-top/scale)/step)-margin),Math.min(hiY,Math.ceil(((h-top)/scale)/step)+margin)]}
+function mountTile(layer,z,x,y,url,k,callback){const img=document.createElement('img');let sz=256/Math.pow(2,z);img.dataset.tile=k;img.alt='';img.decoding='async';img.style.left=x*sz+'px';img.style.top=y*sz+'px';img.style.width=(sz+0.1)+'px';img.style.height=(sz+0.1)+'px';img.onload=()=>{if(callback)callback(true)};img.onerror=()=>{if(callback)callback(false)};img.src=url;layer.appendChild(img);return img}
+function initializeUnderlays(){for(let z=0;z<=2;z++){const [[x0,y0],[x1,y1]]=ranges[z];for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){let base64=fallbackCache[z+'-'+y+'-'+x];if(base64)mountTile(layers[z],z,x,y,'data:image/jpeg;base64,'+base64,z+'-'+y+'-'+x)}}}
+function loadHighTile(z,x,y,key){
+ const layer=layers[z],path='map-tiles/6/day/'+z+'/'+z+','+y+','+x+'.jpg?m='+retryToken;
+ let img=mountTile(layer,z,x,y,path,key,ok=>{if(ok){img.dataset.loaded='1'}else if(img.dataset.retry!=='1'){img.dataset.retry='1';img.src='https://raw.githubusercontent.com/rolux/gtadb.org/main/maps/tiles/6/day/'+z+'/'+z+','+y+','+x+'.jpg'}else{failSet.add(key);img.remove()}updateQuality()});
+}
+function visibleTiles(z){let [x0,x1,y0,y1]=bounds(z);let wanted=new Set(),layer=layers[z];for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const k=z+'-'+y+'-'+x;wanted.add(k);if(failSet.has(k)||layer.querySelector('[data-tile="'+k+'"]'))continue;loadHighTile(z,x,y,k)}
+for(const child of [...layer.children])if(!wanted.has(child.dataset.tile))child.remove()}
+function drawTiles(){let level=zoomLevel();for(let z=3;z<=6;z++){layers[z].style.display=z<=level?'block':'none';if(z>level){layers[z].replaceChildren();continue}}if(level>=3)visibleTiles(level);if(level>=4)visibleTiles(level-1);updateQuality()}
+function updateQuality(){const z=zoomLevel(),current=z<=2?layers[z]:layers[z],count=z<=2?current.children.length:[...current.children].filter(e=>e.dataset.loaded==='1').length;const suffix=z>=3&&count===0?' · laddar högupplöst kartlager':' · bildrutor '+count;$('quality').textContent='Detaljnivå '+(z+1)+'/7'+suffix}
+function allVisible(){const q=$('search').value.toLocaleLowerCase('sv-SE').trim();return pins.concat(ownPins()).filter(p=>on.has(p.cat)&&(!q||(p.name+' '+(p.area||p.desc||'')+' '+p.cat).toLocaleLowerCase('sv-SE').includes(q)))}
+function renderPins(){markers.replaceChildren();const list=allVisible();const w=vp.clientWidth,h=vp.clientHeight;
+ let used=new Set(),displayed=0;
+ for(const p of list){let px=p.x*10.24*scale+left,py=p.y*10.24*scale+top;if(px< -50||py< -50||px>w+50||py>h+50)continue;
+ let cellSize=scale<1?37:scale<3?29:20;let key=Math.floor(px/cellSize)+'/'+Math.floor(py/cellSize);if(used.has(key))continue;used.add(key);
+ let b=document.createElement('button');b.className='marker'+(p.cat==='Egna'?' own':'');b.textContent=symbols[p.cat]||'📍';b.dataset.id=p.id;b.title=p.name;b.style.left=(p.x*10.24)+'px';b.style.top=(p.y*10.24)+'px';b.style.transform='translate(-50%,-100%) scale('+(1/scale)+')';b.onclick=e=>{e.stopPropagation();selectPin(p)};markers.append(b);displayed++;
+ }
+ $('notice').textContent=displayed+' nålar på skärmen · '+pins.length+' kända platser'+(addMode?' · sätt en nål på kartan':'');
+}
+function selectPin(p){selected=p;let isOwn=p.cat==='Egna';$('details').innerHTML='<div class="pill">'+esc(p.cat)+' · '+(isOwn?'Eget fynd':'GTADB-kartdata')+'</div><h2>'+esc(p.name)+'</h2><p>'+esc(p.area||p.desc||'Platsinformation från GTADB')+'</p>'+(p.source?'<a href="'+esc(p.source)+'" target="_blank" rel="noopener">Originalkälla ↗</a>':'')+(isOwn?'<p><button id="deleteOwn" type="button">Ta bort min nål</button></p>':'')+'<div class="credits">Kartdata © GTADB.ORG och bidragsgivare, CC BY 4.0. Platsens existens kan behöva kontrolleras i spelet.</div>';if(isOwn)$('deleteOwn').onclick=()=>{savePins(ownPins().filter(x=>x.id!==p.id));renderPins();$('details').innerHTML='<h2>Fyndet är borttaget</h2>'}}
+function renderOptions(){$('optionGrid').innerHTML=groups.map(c=>'<label class="check"><input type="checkbox" data-group="'+esc(c)+'" '+(on.has(c)?'checked':'')+'>'+symbols[c]+' '+esc(c)+'</label>').join('');document.querySelectorAll('[data-quick]').forEach(b=>b.classList.toggle('selected',b.dataset.quick==='Alla'?on.size===groups.length:on.size===1&&on.has(b.dataset.quick)))}
+let framePending=false;function requestDraw(){if(framePending)return;framePending=true;requestAnimationFrame(()=>{framePending=false;drawTiles();renderPins()})}
+$('toggle').onclick=()=>{$('options').classList.toggle('open')};
+$('showAll').onclick=()=>{on=new Set(groups);renderOptions();renderPins()};
+$('hideAll').onclick=()=>{on.clear();renderOptions();renderPins()};
+$('optionGrid').onchange=e=>{const c=e.target.dataset.group;if(!c)return;e.target.checked?on.add(c):on.delete(c);renderOptions();renderPins()};
+document.querySelectorAll('[data-quick]').forEach(b=>b.onclick=()=>{const c=b.dataset.quick;on=c==='Alla'?new Set(groups):new Set([c]);renderOptions();renderPins()});
+$('search').oninput=renderPins;
+$('zin').onclick=()=>zoomBy(1.5);$('zout').onclick=()=>zoomBy(1/1.5);$('fit').onclick=fit;
+$('add').onclick=()=>{addMode=!addMode;$('add').classList.toggle('primary',addMode);$('notice').textContent=addMode?'Tryck på kartan för att sätta din nål':'';
+};
+vp.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;vp.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});downMoved=false;if(pointers.size===1)gesture={type:'pan',x:e.clientX,y:e.clientY,left,top};else if(pointers.size===2){let a=[...pointers.values()];gesture={type:'pinch',distance:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),scale,left,top,mx:(a[0].x+a[1].x)/2,my:(a[0].y+a[1].y)/2};downMoved=true}});
+vp.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(!gesture)return;let r=vp.getBoundingClientRect();if(pointers.size===2&&gesture.type==='pinch'){let a=[...pointers.values()],mx=(a[0].x+a[1].x)/2,my=(a[0].y+a[1].y)/2;scale=Math.max(minScale,Math.min(maxScale,gesture.scale*Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)/Math.max(1,gesture.distance)));let k=scale/gesture.scale;left=(mx-r.left)-(gesture.mx-r.left-gesture.left)*k;top=(my-r.top)-(gesture.my-r.top-gesture.top)*k;updateTransform();requestDraw()}else if(pointers.size===1&&gesture.type==='pan'){let dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;if(Math.hypot(dx,dy)>5)downMoved=true;left=gesture.left+dx;top=gesture.top+dy;updateTransform();requestDraw()}});
+vp.addEventListener('pointerup',e=>{let click=addMode&&!downMoved&&pointers.size===1;pointers.delete(e.pointerId);if(click){let r=vp.getBoundingClientRect(),x=(e.clientX-r.left-left)/scale/1024*100,y=(e.clientY-r.top-top)/scale/1024*100;if(x>=0&&x<=100&&y>=0&&y<=100){let name=prompt('Vad hittade du?');if(name&&name.trim()){let note=prompt('Anteckning (valfritt)')||'';let p={id:'personal-'+Date.now(),name:name.trim().slice(0,90),desc:note.slice(0,500),cat:'Egna',x:+x.toFixed(4),y:+y.toFixed(4)};savePins([...ownPins(),p]);on.add('Egna');renderOptions();selectPin(p)}}addMode=false;$('add').classList.remove('primary');renderPins()}if(pointers.size===1){let x=[...pointers.values()][0];gesture={type:'pan',x:x.x,y:x.y,left,top}}else if(!pointers.size)gesture=null});
+vp.addEventListener('pointercancel',e=>{pointers.delete(e.pointerId);gesture=null});
+vp.addEventListener('wheel',e=>{e.preventDefault();let r=vp.getBoundingClientRect();zoomBy(e.deltaY<0?1.16:1/1.16,e.clientX-r.left,e.clientY-r.top)},{passive:false});
+async function fetchPois(){try{let r=await fetch('gtadb-pois.json?cache=12',{cache:'no-store'});if(!r.ok)throw Error('Data '+r.status);let j=await r.json();pins=(j.items||[]).filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y));renderPins()}catch(err){$('notice').textContent='Kartan är öppen. Platsmarkeringar kunde inte hämtas.'}}
+window.addEventListener('resize',()=>{fit()});
+initializeUnderlays();renderOptions();fit();fetchPois();
+</script></body></html>
