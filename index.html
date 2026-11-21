@@ -12,8 +12,8 @@
 <section id="home"><div class="panel" style="border-color:#bd8c4c"><div class="tag">KAPITEL 1 · SPOILERFRITT</div><h2 style="margin:8px 0">💰 Spara inte ihop en förmögenhet ännu!</h2><p class="sub">När BuckMe är upplåst: undersök Family Savings. Enligt spelguider förloras andra pengar vid kapitelövergången, medan Family Savings är skyddat men låst.</p><button type="button" id="chapterOneTips" class="primary">Visa tips för kapitel 1</button></div><h2>Vad vill du hitta?</h2><div class="categories" id="categories"></div><h2>Utvalda guider</h2><div id="featured"></div></section>
 <section id="guides" class="hidden"><div class="toprow"><h2 id="resultTitle">Guider</h2><button id="reset" type="button">Visa alla</button></div><div id="results"></div></section>
 <section id="saved" class="hidden"><h2>⭐ Mina favoriter</h2><div id="savedResults"></div><p class="muted">Sparas lokalt i webbläsaren på den här enheten.</p></section>
-<section id="map" class="hidden"><iframe id="realMapFrame" title="Leonida PRO" loading="lazy" data-src="map-stable.html?v=14" style="width:100%;height:100%;min-height:0;border:0;background:#0a1219"></iframe><div style="position:absolute;bottom:8px;right:10px"><a href="map-pro.html?v=13a" target="_blank" rel="noopener" style="color:#ffce89;background:#142533;padding:8px;border-radius:10px">Öppna kartan separat ↗</a></div></section>
-<p class="muted">Leonida PRO v13 · stabilitetsfix · hela kartan · högupplösta kartlager · Källor och platsuppgifter kan ändras. Obekräftade fynd anges tydligt. Appen har ingen direktkoppling till ditt PS5-spel.</p></main>
+<section id="map" class="hidden"><iframe id="realMapFrame" title="Leonida PRO" loading="lazy" data-src="map-stable.html?v=15" style="width:100%;height:100%;min-height:0;border:0;background:#0a1219"></iframe><div style="position:absolute;bottom:8px;right:10px"><a href="map-pro.html?v=13a" target="_blank" rel="noopener" style="color:#ffce89;background:#142533;padding:8px;border-radius:10px">Öppna kartan separat ↗</a></div></section>
+<p class="muted">Leonida map v15 · English names · bilingual search · högupplösta kartlager · Källor och platsuppgifter kan ändras. Obekräftade fynd anges tydligt. Appen har ingen direktkoppling till ditt PS5-spel.</p></main>
 <nav class="footnav" aria-label="Huvudmeny"><button data-tab="home" class="active">🏠 Start</button><button data-tab="guides">📖 Guider</button><button data-tab="saved">⭐ Sparat</button><button data-tab="map">🗺️ Karta</button></nav>
 <script>
 'use strict';
@@ -22,7 +22,28 @@ const cats=[['🔫','Vapen'],['💰','Pengar'],['🚗','Bilar'],['🗺️','Heml
 let state={chapter:'1',spoilers:true,favs:{}};try{let saved=JSON.parse(localStorage.getItem('greven-gta6-web-v1')||'{}');state={...state,...saved,chapter:'1',spoilers:true}}catch(e){}
 function persist(){try{localStorage.setItem('greven-gta6-web-v1',JSON.stringify(state))}catch(e){}}
 function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
-function matches(item,q){let words=norm(q).split(' ').filter(w=>w.length>2&&!['vart','finns','hittar','nagon','natt','javla','hur','kan','jag','det','den','ett','var','har','till','mig','med','som','vill'].includes(w));if(!words.length)return true;let hay=norm(item.name+' '+item.cat+' '+item.keywords+' '+item.info+' '+(item.chapter?' kapitel '+item.chapter:''));return words.some(w=>hay.includes(w)|| (w==='snajper'&&hay.includes('sniper'))||(w==='gevaret'&&hay.includes('gevar')))}
+const GUIDE_ALIASES={
+ bil:['bil','bilar','car','cars','vehicle','garage','moses','key cloner'],
+ bilar:['bil','bilar','car','cars','vehicle','garage'],
+ car:['bil','bilar','car','cars','vehicle','garage'],
+ fordon:['bil','bilar','car','cars','vehicle','garage'],
+ pistol:['pistol','gun','guns','vapen','weapon','weapons','ammo','gevär'],
+ gun:['pistol','gun','guns','vapen','weapon','weapons','ammo'],
+ gevär:['gevär','gun','guns','vapen','weapon','sniper','rifle'],
+ vapen:['vapen','gun','guns','weapon','weapons','ammo'],
+ pengar:['pengar','money','cash','rån','bank','sälja'],
+ money:['pengar','money','cash','rån','bank'],
+ bank:['bank','bankkonto','buckme','money','cash'],
+ hemliga:['hemlig','secret','hidden','fynd','bunker'],
+ hidden:['hemlig','secret','hidden','fynd','bunker'],
+ sniper:['sniper','snajper','prickskyttegevär','sm69','sm-69']
+};
+function matches(item,q){
+ let words=norm(q).split(' ').filter(w=>w.length>2&&!['vart','finns','hittar','nagon','natt','javla','hur','kan','jag','det','den','ett','var','har','till','mig','med','som','vill','efter'].includes(w));
+ if(!words.length)return true;
+ const hay=norm(item.name+' '+item.cat+' '+item.keywords+' '+item.info+' '+(item.chapter?' kapitel '+item.chapter:''));
+ return words.some(w=>(GUIDE_ALIASES[w]||[w]).some(alias=>hay.includes(norm(alias))));
+}
 const $=id=>document.getElementById(id);
 function esc(s){return String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]))}
 function card(g){return '<article class="result"><div class="tag">'+esc(g.cat)+' · '+esc(g.level)+'</div><h3>'+esc(g.name)+'</h3><p>'+esc(g.info)+'</p><details><summary>📖 Visa steg för steg</summary><ol>'+g.steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol></details><div class="actions"><button type="button" data-fav="'+g.id+'">'+(state.favs[g.id]?'★ Sparad':'☆ Spara favorit')+'</button>'+(g.source?'<a href="'+esc(g.source)+'" target="_blank" rel="noopener">Öppna källa ↗</a>':'')+'</div></article>'}
