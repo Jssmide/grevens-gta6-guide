@@ -37,7 +37,7 @@ button.primary{background:var(--gold);color:#182331;border-color:var(--gold);fon
 #overlayInfo{position:absolute;inset:auto 10px 10px auto;font-size:11px;color:#e6ecf1}
 </style></head>
 <body><header><div class="topline"><h1>🗺️ GREVEN'S <em>LEONIDA PRO</em></h1><span class="tag">HEL KARTA · V12.2</span></div>
-<p class="sub">GTADB:s communitykarta över hela Leonida. Högupplösta kartlager laddas när du zoomar. Tryck på en markering för detaljer.</p>
+<p class="sub">GTADB:s communitykarta över hela Leonida. Högupplösta kartlager laddas först när du behöver dem. Tryck på en markering för detaljer.</p>
 <div class="searchrow"><input type="search" id="search" placeholder="Sök område, garage, vapenbutik…"><button id="toggle" type="button">⚙️ Filter</button></div><div id="searchResults" class="searchResults" hidden></div>
 <div id="categories"><button class="cat selected" data-quick="Alla">Alla</button><button class="cat" data-quick="Vapenbutiker">🔫 Vapen</button><button class="cat" data-quick="Garage">🚘 Garage</button><button class="cat" data-quick="Häleri">💰 Häleri</button><button class="cat" data-quick="Egna">⭐ Egna</button></div>
 <div class="tworow"><span id="notice">Kartmaterialet laddas…</span><button id="add" type="button" style="font-size:12px;padding:7px 10px">＋ Spara eget fynd</button></div></header>
@@ -56,7 +56,7 @@ const groups=Object.keys(symbols);
 let on=new Set(['Vapenbutiker','Garage','Häleri','Egna']),pins=[],scale=1,left=0,top=0,minScale=0.4,maxScale=21;
 let pointers=new Map(),gesture=null,downMoved=false,addMode=false,selected=null;
 const storedKey='grevens-gta6-map-v7'; // bevara markeringar från föregående karta
-const fallbackCache=window.GREVEN_TILE_DATA||{};
+const fallbackCache={}; // Hämta endast de JPG-rutor som behövs
 const layers={};for(let z=0;z<=6;z++)layers[z]=$(z<=2?'underlay'+z:'level'+z);
 const failSet=new Set(),retryToken=Math.floor(Date.now()/600000); // undvik ihållande cachade 404-svar
 function esc(t){return String(t||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -69,15 +69,24 @@ function fit(){minScale=Math.min(vp.clientWidth,vp.clientHeight)/1024;scale=minS
 function zoomLevel(){return Math.max(0,Math.min(6,Math.ceil(Math.log2(Math.max(1,scale*Math.min(window.devicePixelRatio||2,3))))))}
 function bounds(z,margin=1){const w=vp.clientWidth,h=vp.clientHeight,step=256/Math.pow(2,z);let [[loX,loY],[hiX,hiY]]=ranges[z];return [Math.max(loX,Math.floor((-left/scale)/step)-margin),Math.min(hiX,Math.ceil(((w-left)/scale)/step)+margin),Math.max(loY,Math.floor((-top/scale)/step)-margin),Math.min(hiY,Math.ceil(((h-top)/scale)/step)+margin)]}
 function mountTile(layer,z,x,y,url,k,callback){const img=document.createElement('img');let sz=256/Math.pow(2,z);img.dataset.tile=k;img.alt='';img.decoding='async';img.style.left=x*sz+'px';img.style.top=y*sz+'px';img.style.width=(sz+0.1)+'px';img.style.height=(sz+0.1)+'px';img.onload=()=>{if(callback)callback(true)};img.onerror=()=>{if(callback)callback(false)};img.src=url;layer.appendChild(img);return img}
-function initializeUnderlays(){for(let z=0;z<=2;z++){const [[x0,y0],[x1,y1]]=ranges[z];for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){let base64=fallbackCache[z+'-'+y+'-'+x];mountTile(layers[z],z,x,y,base64?'data:image/jpeg;base64,'+base64:'map-tiles/6/day/'+z+'/'+z+','+y+','+x+'.jpg?m='+retryToken,z+'-'+y+'-'+x)}}}
+function initializeUnderlays(){/* Inga hundratals base64-bilder vid start */}
 function loadHighTile(z,x,y,key){
  const layer=layers[z],path='map-tiles/6/day/'+z+'/'+z+','+y+','+x+'.jpg?m='+retryToken;
  let img=mountTile(layer,z,x,y,path,key,ok=>{if(ok){img.dataset.loaded='1'}else if(img.dataset.retry!=='1'){img.dataset.retry='1';img.src='https://raw.githubusercontent.com/rolux/gtadb.org/main/maps/tiles/6/day/'+z+'/'+z+','+y+','+x+'.jpg'}else{failSet.add(key);img.remove()}updateQuality()});
 }
 function visibleTiles(z){let [x0,x1,y0,y1]=bounds(z);let wanted=new Set(),layer=layers[z];for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const k=z+'-'+y+'-'+x;wanted.add(k);if(failSet.has(k)||layer.querySelector('[data-tile="'+k+'"]'))continue;loadHighTile(z,x,y,k)}
 for(const child of [...layer.children])if(!wanted.has(child.dataset.tile))child.remove()}
-function drawTiles(){let level=zoomLevel();for(let z=3;z<=6;z++){layers[z].style.display=z<=level?'block':'none';if(z>level){layers[z].replaceChildren();continue}}if(level>=3)visibleTiles(level);if(level>=4)visibleTiles(level-1);updateQuality()}
-function updateQuality(){const z=zoomLevel(),current=z<=2?layers[z]:layers[z],count=z<=2?current.children.length:[...current.children].filter(e=>e.dataset.loaded==='1').length;const suffix=z>=3&&count===0?' · laddar högupplöst kartlager':' · bildrutor '+count;$('quality').textContent='Detaljnivå '+(z+1)+'/7'+suffix}
+function drawTiles(){
+ const level=zoomLevel();
+ for(let z=0;z<=6;z++){
+   const shouldShow=z===0 || (z>=1 && z<=level && z>=Math.max(1,level-1));
+   layers[z].style.display=shouldShow?'block':'none';
+   if(!shouldShow){layers[z].replaceChildren();continue}
+   visibleTiles(z);
+ }
+ updateQuality();
+}
+function updateQuality(){const z=zoomLevel(),current=layers[z],count=[...current.children].filter(e=>e.dataset.loaded==='1').length;const suffix=count===0?' · laddar kartbilder':' · bildrutor '+count;$('quality').textContent='Detaljnivå '+(z+1)+'/7'+suffix}
 function allVisible(){const q=$('search').value.toLocaleLowerCase('sv-SE').trim();return pins.concat(ownPins()).filter(p=>(q||on.has(p.cat))&&(!q||(p.name+' '+(p.area||p.desc||'')+' '+p.cat).toLocaleLowerCase('sv-SE').includes(q)))}
 function searchList(){const q=$('search').value.trim();const box=$('searchResults');if(!q){box.hidden=true;box.replaceChildren();return}const match=allVisible().slice(0,10);box.hidden=false;box.innerHTML=match.length?match.map((p,i)=>'<button type="button" data-result="'+i+'">'+(symbols[p.cat]||'📍')+' '+esc(p.name)+' <small>· '+esc(p.cat)+'</small></button>').join(''):'<div class="small" style="padding:8px">Inga koordinatsatta platser matchar. Sök i huvudguiden för fler föremål.</div>';box.querySelectorAll('[data-result]').forEach(b=>b.onclick=()=>{const p=match[Number(b.dataset.result)];if(!p)return;scale=Math.max(scale,10);left=vp.clientWidth/2-p.x*10.24*scale;top=vp.clientHeight/2-p.y*10.24*scale;updateTransform();requestDraw();selectPin(p);box.hidden=true})}
 function renderPins(){markers.replaceChildren();const list=allVisible();const w=vp.clientWidth,h=vp.clientHeight;
