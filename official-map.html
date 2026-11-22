@@ -18,6 +18,30 @@ button.primary{background:#f3be79;color:#14212a;border-color:#f3be79;font-weight
 #notice{display:none;background:#5d2d34;border-radius:9px;padding:9px;font-size:12px;margin-top:8px}
 input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
 #choose{background:#f3be79;color:#14212a;font-weight:850}
+
+/* Interactive findings: aligned to original-map pixels, not screen position */
+.tools2{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.tools2 button{padding:9px 11px}
+.tools2 button.selected{background:#f3be79;color:#14212a;font-weight:850}
+.searchbox{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.searchbox input{min-width:0;flex:1;background:#132d3e;color:#fff;border:1px solid #4b6878;border-radius:9px;padding:10px}
+#pinLayer{position:absolute;top:0;left:0;transform-origin:0 0;pointer-events:none}
+#pinLayer button{position:absolute;width:34px;height:34px;border:2px solid #ffd397;border-radius:50%;background:#092434ed;display:grid;place-items:center;padding:0;box-shadow:0 3px 12px #061018bb;pointer-events:auto;font-size:16px;touch-action:manipulation;transform-origin:50% 100%}
+#pinLayer button.guide{border-color:#7fe2ad}
+#foundPanel{padding:12px;background:#162f40;border-top:1px solid #405a6b}
+#foundPanel h2{font-size:15px;margin:0 0 8px}
+#foundPanel p{margin:6px 0}
+#foundPanel .pinrow{display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:8px 2px;border-bottom:1px solid #365064}
+#foundPanel .pinrow button{font-size:12px;padding:7px 9px}
+#pinEditor{padding:12px;background:#1a3243;border-top:1px solid #4b6576}
+#pinEditor[hidden],#foundPanel[hidden]{display:none}
+#pinEditor label{display:block;color:#c7d6de;font-size:12px;margin:7px 0}
+#pinEditor input,#pinEditor textarea,#pinEditor select{display:block;width:100%;padding:10px;border:1px solid #587083;background:#0b2130;border-radius:9px;color:white;font:inherit}
+#pinEditor textarea{min-height:70px}
+#pinEditor .actions{margin-top:9px}
+#searchResults{margin-top:6px;max-height:150px;overflow:auto}
+#searchResults button{width:100%;text-align:left;margin:3px 0}
+#findCount{font-size:11px;color:#ffd09b;margin:7px 0}
 </style></head><body>
 <header><h1>🗺️ GREVEN'S <strong>OFFICIAL LEONIDA</strong></h1>
 <p>Visa Rockstars officiella högupplösta karta direkt på iPhone. Du väljer bilden en gång; den sparas lokalt i din webbläsare, inte på vår server.</p>
@@ -27,13 +51,13 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidde
 <a class="btn" href="https://www.rockstargames.com/VI/media" target="_blank" rel="noopener">Rockstar – hämta kartan ↗</a>
 <button type="button" id="clear">Ta bort sparad bild</button>
 </div>
-<div id="status">Söker efter tidigare sparad karta…</div><div id="notice"></div>
+<div class="tools2"><button type="button" id="newPin">📍 Markera eget fynd</button><button type="button" id="pinToggle">⭐ Visa/dölj nålar</button><button type="button" id="findToggle">🔎 Sök fynd</button></div><div id="findPanel" hidden><div class="searchbox"><input id="findQuery" type="search" placeholder="bil, car, pistol, gun, cash, bunker…"><select id="findCategory" style="background:#132d3e;color:white;border-radius:9px;border:1px solid #4b6878"><option value="all">All types</option><option value="weapon">Weapons</option><option value="car">Vehicles</option><option value="money">Money</option><option value="secret">Secrets</option><option value="place">Places</option></select></div><div id="findCount"></div><div id="searchResults"></div></div><div id="status">Söker efter tidigare sparad karta…</div><div id="notice"></div>
 </header>
 <div id="viewport">
-<img id="mapImage" alt="Fullständig officiell Leonida-karta" style="display:none">
+<img id="mapImage" alt="Fullständig officiell Leonida-karta" style="display:none"><div id="pinLayer"></div>
 <div id="empty"><div><b>Hela Leonida, i originalupplösning</b><p>Hämta Rockstars kostnadsfria kartposter, öppna ZIP-filen i iPhones Filer och välj JPG-bilden här. Därefter kan du zooma med fingrarna.</p></div></div>
 <div class="zooms"><button id="plus" type="button">+</button><button id="minus" type="button">−</button><button id="reset" type="button">⤢</button></div></div>
-<div id="help"><strong>Karta från Rockstar · Engelska platsnamn</strong><p>Det här är själva kartbilden, inte vår tidigare communityrekonstruktion. Den har bättre originaldetalj, men är fortfarande en bild: den visar inte automatiskt var hemliga vapen ligger. Använd appens guider för sökbara fynd.</p><p>Obs! Din kartbild lagras bara i Safari på denna enhet. Om iPhone rensar webbplatsdata kan du behöva välja bilden igen.</p></div>
+<div id="pinEditor" hidden><strong>Save finding on map</strong><label>Name<input id="pinName" maxlength="90" placeholder="e.g. Secret gun / rare car"></label><label>Category<select id="pinCategory"><option value="weapon">🔫 Weapon</option><option value="car">🚗 Vehicle</option><option value="money">💰 Money</option><option value="secret">🗝️ Secret</option><option value="place">📍 Place</option></select></label><label>Notes<textarea id="pinNotes" maxlength="500" placeholder="How to find it / mission / instructions"></textarea></label><div class="actions"><button type="button" id="pinSave" class="primary">Save pin</button><button type="button" id="pinCancel">Cancel</button></div></div><div id="foundPanel" hidden><h2>My findings</h2><div id="foundList"></div></div><div id="help"><strong>Karta från Rockstar · Engelska platsnamn</strong><p>Det här är själva kartbilden, inte vår tidigare communityrekonstruktion. Den har bättre originaldetalj, men är fortfarande en bild: den visar inte automatiskt var hemliga vapen ligger. Använd appens guider för sökbara fynd.</p><p>Obs! Din kartbild lagras bara i Safari på denna enhet. Om iPhone rensar webbplatsdata kan du behöva välja bilden igen.</p></div>
 <script>
 (function(){
 "use strict";
@@ -42,21 +66,53 @@ var w=0,h=0,scale=1,min=0.1,max=4,tx=0,ty=0,points=new Map(),gesture=null,url=nu
 function msg(s){el("status").textContent=s}
 function warn(s){el("notice").textContent=s;el("notice").style.display="block"}
 function fit(){if(!w||!h)return;const cw=vp.clientWidth,ch=vp.clientHeight;min=Math.min(cw/w,ch/h);max=Math.max(min,Math.min(2,Math.max(1,6000/w)));scale=min;tx=(cw-w*scale)/2;ty=(ch-h*scale)/2;paint()}
-function paint(){if(!w||!h)return;const vw=vp.clientWidth,vh=vp.clientHeight;tx=w*scale<=vw?(vw-w*scale)/2:Math.max(vw-w*scale,Math.min(0,tx));ty=h*scale<=vh?(vh-h*scale)/2:Math.max(vh-h*scale,Math.min(0,ty));img.style.transform='translate3d('+tx+'px,'+ty+'px,0) scale('+scale+')';msg(Math.round(scale/min*100)+' % zoom · '+w+' × '+h+' pixlar')}
+function paint(){if(!w||!h)return;const vw=vp.clientWidth,vh=vp.clientHeight;tx=w*scale<=vw?(vw-w*scale)/2:Math.max(vw-w*scale,Math.min(0,tx));ty=h*scale<=vh?(vh-h*scale)/2:Math.max(vh-h*scale,Math.min(0,ty));img.style.transform='translate3d('+tx+'px,'+ty+'px,0) scale('+scale+')';const layer=el('pinLayer');layer.style.transform='translate3d('+tx+'px,'+ty+'px,0) scale('+scale+')';renderPins();msg(Math.round(scale/min*100)+' % zoom · '+w+' × '+h+' pixlar')}
 function zoom(f,cx=vp.clientWidth/2,cy=vp.clientHeight/2){const old=scale;scale=Math.max(min,Math.min(max,scale*f));const k=scale/old;tx=cx-(cx-tx)*k;ty=cy-(cy-ty)*k;paint()}
-function showBlob(blob,save){if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(blob);img.onload=()=>{w=img.naturalWidth;h=img.naturalHeight;img.style.width=w+'px';img.style.height=h+'px';img.style.display='block';empty.style.display='none';fit();if(save)saveBlob(blob)};img.onerror=()=>warn('Bilden kunde inte öppnas. Välj JPG-filen, inte ZIP-filen.');img.src=url}
+function showBlob(blob,save){if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(blob);img.onload=()=>{w=img.naturalWidth;h=img.naturalHeight;img.style.width=w+'px';img.style.height=h+'px';img.style.display='block';empty.style.display='none';const layer=el('pinLayer');layer.style.width=w+'px';layer.style.height=h+'px';fit();if(save)saveBlob(blob)};img.onerror=()=>warn('Bilden kunde inte öppnas. Välj JPG-filen, inte ZIP-filen.');img.src=url}
 function db(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window)){reject(Error('IndexedDB saknas'));return}const r=indexedDB.open('grevens-leonida-official',1);r.onupgradeneeded=()=>r.result.createObjectStore('files');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
 async function saveBlob(blob){try{const d=await db(),t=d.transaction('files','readwrite');t.objectStore('files').put(blob,'official');t.oncomplete=()=>d.close();t.onerror=()=>warn('Kunde inte spara bilden permanent. Den fungerar ändå tills sidan stängs.')}catch(e){warn('Kunde inte lagra bilden på iPhone: '+e.message)}}
 async function restore(){try{const d=await db();const r=d.transaction('files','readonly').objectStore('files').get('official');r.onsuccess=()=>{if(r.result)showBlob(r.result,false);else msg('Välj officiell kartbild för att börja.');d.close()};r.onerror=()=>msg('Välj officiell kartbild för att börja.')}catch(e){msg('Välj officiell kartbild för att börja.')}}
+
+function renderPins(){
+ const layer=el('pinLayer');layer.replaceChildren();
+ if(!w||!h||!showPins)return;
+ for(const p of getPins()){
+  const b=document.createElement('button');b.type='button';b.textContent=ICON[p.category]||'📍';b.style.left=(p.x*w)+'px';b.style.top=(p.y*h)+'px';b.style.transform='translate(-50%,-100%) scale('+(1/scale)+')';b.title=p.name;b.setAttribute('aria-label',p.name);b.onclick=e=>{e.stopPropagation();selectPin(p.id)};layer.appendChild(b);
+ }
+}
+function focusPin(p){
+ if(!w||!h)return;const r=vp.getBoundingClientRect();scale=Math.max(scale,min*5);tx=r.width/2-(p.x*w*scale);ty=r.height/2-(p.y*h*scale);paint();
+}
+function selectPin(id){
+ const p=getPins().find(v=>v.id===id);if(!p)return;
+ selectedId=id;el('foundPanel').hidden=false;el('foundList').innerHTML='<div class="pinrow"><strong>'+escaped(p.name)+'</strong><span>'+ICON[p.category]+'</span></div><p>'+escaped(p.notes||'No notes')+'</p><div class="actions"><button type="button" id="pinGo">Go to pin</button><button type="button" id="pinRemove">Remove pin</button></div>';
+ el('pinGo').onclick=()=>focusPin(p);
+ el('pinRemove').onclick=()=>{storePins(getPins().filter(x=>x.id!==id));el('foundPanel').hidden=true;renderPins();updateFindList()};
+}
+function updateFindList(){
+ const query=el('findQuery').value.trim(),category=el('findCategory').value;
+ const all=getPins(),items=all.filter(p=>(category==='all'||p.category===category)&&pinMatches(p,query));
+ el('findCount').textContent=items.length+' findings saved on this iPhone';
+ const root=el('searchResults');root.replaceChildren();
+ for(const p of items){const b=document.createElement('button');b.type='button';b.textContent=(ICON[p.category]||'📍')+' '+p.name;b.onclick=()=>{selectPin(p.id);focusPin(p)};root.appendChild(b)}
+ if(items.length===0){const t=document.createElement('p');t.textContent='No saved findings match. Add a pin on the map first.';root.appendChild(t)}
+}
+el('newPin').onclick=()=>{if(!w){warn('Choose your Leonida map image first');return}addPin=!addPin;el('newPin').classList.toggle('selected',addPin);el('status').textContent=addPin?'Tap once on the map where your finding is.':'Pin mode cancelled.'};
+el('pinToggle').onclick=()=>{showPins=!showPins;el('pinToggle').classList.toggle('selected',showPins);renderPins()};
+el('findToggle').onclick=()=>{const p=el('findPanel');p.hidden=!p.hidden;if(!p.hidden)updateFindList()};
+el('findQuery').oninput=updateFindList;el('findCategory').onchange=updateFindList;
+el('pinCancel').onclick=()=>{pending=null;el('pinEditor').hidden=true};
+el('pinSave').onclick=()=>{if(!pending)return;const name=el('pinName').value.trim();if(!name){warn('Enter a name for the finding');return}const category=el('pinCategory').value,notes=el('pinNotes').value.trim(),p={id:'pin-'+Date.now(),x:pending.x,y:pending.y,name,category,notes};storePins([...getPins(),p]);pending=null;el('pinEditor').hidden=true;renderPins();selectPin(p.id);updateFindList()};
+
 el('file').addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;if(!f.type.startsWith('image/')){warn('Du måste välja JPG-bilden ur ZIP-filen.');return}showBlob(f,true)});
 el('clear').onclick=async()=>{try{const d=await db(),t=d.transaction('files','readwrite');t.objectStore('files').delete('official');t.oncomplete=()=>d.close()}catch(e){}if(url)URL.revokeObjectURL(url);url=null;w=0;h=0;img.removeAttribute('src');img.style.display='none';empty.style.display='flex';msg('Sparad kartbild borttagen')};
 el('plus').onclick=()=>zoom(1.45);el('minus').onclick=()=>zoom(1/1.45);el('reset').onclick=fit;
-vp.addEventListener('pointerdown',e=>{if(e.target.closest('button')||!w)return;vp.setPointerCapture(e.pointerId);points.set(e.pointerId,{x:e.clientX,y:e.clientY});if(points.size===1)gesture={mode:'pan',x:e.clientX,y:e.clientY,tx,ty};else if(points.size===2){let p=[...points.values()];gesture={mode:'pinch',distance:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),s:scale,tx,ty,mx:(p[0].x+p[1].x)/2,my:(p[0].y+p[1].y)/2}}});
-vp.addEventListener('pointermove',e=>{if(!points.has(e.pointerId)||!gesture)return;points.set(e.pointerId,{x:e.clientX,y:e.clientY});if(points.size===2&&gesture.mode==='pinch'){const p=[...points.values()],mx=(p[0].x+p[1].x)/2,my=(p[0].y+p[1].y)/2,r=vp.getBoundingClientRect(),newScale=Math.max(min,Math.min(max,gesture.s*Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)/Math.max(1,gesture.distance))),k=newScale/gesture.s;scale=newScale;tx=mx-r.left-(gesture.mx-r.left-gesture.tx)*k;ty=my-r.top-(gesture.my-r.top-gesture.ty)*k;paint()}else if(points.size===1&&gesture.mode==='pan'){tx=gesture.tx+e.clientX-gesture.x;ty=gesture.ty+e.clientY-gesture.y;paint()}});
-function release(e){points.delete(e.pointerId);if(points.size===1){let p=[...points.values()][0];gesture={mode:'pan',x:p.x,y:p.y,tx,ty}}else if(!points.size)gesture=null}
+vp.addEventListener('pointerdown',e=>{if(e.target.closest('button')||!w)return;vp.setPointerCapture(e.pointerId);points.set(e.pointerId,{x:e.clientX,y:e.clientY});moved=false;if(points.size===1)gesture={mode:'pan',x:e.clientX,y:e.clientY,tx,ty};else if(points.size===2){moved=true;let p=[...points.values()];gesture={mode:'pinch',distance:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),s:scale,tx,ty,mx:(p[0].x+p[1].x)/2,my:(p[0].y+p[1].y)/2}}});
+vp.addEventListener('pointermove',e=>{if(!points.has(e.pointerId)||!gesture)return;points.set(e.pointerId,{x:e.clientX,y:e.clientY});if(points.size===2&&gesture.mode==='pinch'){moved=true;const p=[...points.values()],mx=(p[0].x+p[1].x)/2,my=(p[0].y+p[1].y)/2,r=vp.getBoundingClientRect(),newScale=Math.max(min,Math.min(max,gesture.s*Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)/Math.max(1,gesture.distance))),k=newScale/gesture.s;scale=newScale;tx=mx-r.left-(gesture.mx-r.left-gesture.tx)*k;ty=my-r.top-(gesture.my-r.top-gesture.ty)*k;paint()}else if(points.size===1&&gesture.mode==='pan'){if(Math.hypot(e.clientX-gesture.x,e.clientY-gesture.y)>7)moved=true;tx=gesture.tx+e.clientX-gesture.x;ty=gesture.ty+e.clientY-gesture.y;paint()}});
+function release(e){const place=addPin&&!moved&&points.size===1&&w&&h;points.delete(e.pointerId);if(place){const r=vp.getBoundingClientRect(),px=(e.clientX-r.left-tx)/scale/w,py=(e.clientY-r.top-ty)/scale/h;if(px>=0&&px<=1&&py>=0&&py<=1){pending={x:px,y:py};el('pinName').value='';el('pinNotes').value='';el('pinEditor').hidden=false;el('pinEditor').scrollIntoView({behavior:'smooth',block:'nearest'});}addPin=false;el('newPin').classList.remove('selected')}if(points.size===1){let p=[...points.values()][0];gesture={mode:'pan',x:p.x,y:p.y,tx,ty}}else if(!points.size)gesture=null}
 vp.addEventListener('pointerup',release);vp.addEventListener('pointercancel',release);
 vp.addEventListener('wheel',e=>{e.preventDefault();const r=vp.getBoundingClientRect();zoom(e.deltaY<0?1.2:1/1.2,e.clientX-r.left,e.clientY-r.top)},{passive:false});
 window.addEventListener('resize',fit);
-restore();
+restore();updateFindList();
 })();
 </script></body></html>
