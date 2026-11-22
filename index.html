@@ -12,7 +12,7 @@
 <section id="home"><div class="panel" style="border-color:#bd8c4c"><div class="tag">KAPITEL 1 · SPOILERFRITT</div><h2 style="margin:8px 0">💰 Spara inte ihop en förmögenhet ännu!</h2><p class="sub">När BuckMe är upplåst: undersök Family Savings. Enligt spelguider förloras andra pengar vid kapitelövergången, medan Family Savings är skyddat men låst.</p><button type="button" id="chapterOneTips" class="primary">Visa tips för kapitel 1</button></div><h2>Vad vill du hitta?</h2><div class="categories" id="categories"></div><h2>Utvalda guider</h2><div id="featured"></div></section>
 <section id="guides" class="hidden"><div class="toprow"><h2 id="resultTitle">Guider</h2><button id="reset" type="button">Visa alla</button></div><div id="results"></div></section>
 <section id="saved" class="hidden"><h2>⭐ Mina favoriter</h2><div id="savedResults"></div><p class="muted">Sparas lokalt i webbläsaren på den här enheten.</p></section>
-<section id="map" class="hidden"><div style="position:absolute;top:4px;left:8px;right:8px;z-index:1;display:flex;gap:7px;background:#0d1925;padding:7px;border-radius:12px"><button type="button" id="officialChoice" class="primary" style="flex:1">🗺️ Official Map</button><button type="button" id="communityChoice" style="flex:1">📍 Community Pins</button></div><iframe id="realMapFrame" title="Leonida-kartan" loading="lazy" data-src="official-map.html?v=1" style="width:100%;height:calc(100% - 55px);margin-top:55px;min-height:0;border:0;background:#0a1219"></iframe></section>
+<section id="map" class="hidden"><div style="position:absolute;top:4px;left:8px;right:8px;z-index:1;display:flex;gap:7px;background:#0d1925;padding:7px;border-radius:12px"><button type="button" id="officialChoice" class="primary" style="flex:1">🗺️ Official Map</button><button type="button" id="communityChoice" style="flex:1">📍 Community Pins</button></div><iframe id="realMapFrame" title="Leonida-kartan" loading="lazy" data-src="official-map.html?v=2" style="width:100%;height:calc(100% - 55px);margin-top:55px;min-height:0;border:0;background:#0a1219"></iframe></section>
 <p class="muted">Leonida map v15 · English names · bilingual search · högupplösta kartlager · Källor och platsuppgifter kan ändras. Obekräftade fynd anges tydligt. Appen har ingen direktkoppling till ditt PS5-spel.</p></main>
 <nav class="footnav" aria-label="Huvudmeny"><button data-tab="home" class="active">🏠 Start</button><button data-tab="guides">📖 Guider</button><button data-tab="saved">⭐ Sparat</button><button data-tab="map">🗺️ Karta</button></nav>
 <script>
@@ -63,7 +63,7 @@ document.addEventListener('click',e=>{let b=e.target.closest('[data-tab],[data-c
 // Kartan körs först när Karta öppnas; gammal kartmotor borttagen.
 
 
-document.getElementById('officialChoice').addEventListener('click',()=>{const f=document.getElementById('realMapFrame');f.src='official-map.html?v=1';document.getElementById('officialChoice').className='primary';document.getElementById('communityChoice').className='';});
+document.getElementById('officialChoice').addEventListener('click',()=>{const f=document.getElementById('realMapFrame');f.src='official-map.html?v=2';document.getElementById('officialChoice').className='primary';document.getElementById('communityChoice').className='';});
 document.getElementById('communityChoice').addEventListener('click',()=>{const f=document.getElementById('realMapFrame');f.src='map-stable.html?v=15';document.getElementById('officialChoice').className='';document.getElementById('communityChoice').className='primary';});
 render();
 </script></body></html>
