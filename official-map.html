@@ -63,6 +63,17 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidde
 "use strict";
 var doc=document, el=id=>doc.getElementById(id),vp=el("viewport"),img=el("mapImage"),empty=el("empty");
 var w=0,h=0,scale=1,min=0.1,max=4,tx=0,ty=0,points=new Map(),gesture=null,url=null;
+
+let addPin=false,showPins=true,moved=false,pending=null,selectedId=null;
+const PIN_KEY='greven-official-map-pins-v1';
+const ICON={weapon:'🔫',car:'🚗',money:'💰',secret:'🗝️',place:'📍'};
+const WORDS={bil:['car','vehicle','garage'],bilar:['car','vehicle','garage'],fordon:['vehicle','car'],pistol:['gun','weapon','firearm'],gevar:['gun','weapon','rifle'],vapen:['gun','weapon'],pengar:['cash','money'],hemlig:['secret','hidden'],hemliga:['secret','hidden'],bank:['money','cash'],sniper:['rifle','gun','weapon']};
+function getPins(){try{const p=JSON.parse(localStorage.getItem(PIN_KEY)||'[]');return Array.isArray(p)?p:[]}catch(e){return []}}
+function storePins(arr){try{localStorage.setItem(PIN_KEY,JSON.stringify(arr))}catch(e){warn('Could not store findings on this device')}}
+function escaped(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function normalize(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
+function pinMatches(p,q){const terms=normalize(q).split(' ').filter(x=>x.length>2&&!['jag','hur','vart','var','finns','hittar','natt','javla','ett','och'].includes(x));if(!terms.length)return true;const hay=normalize(p.name+' '+p.notes+' '+p.category);return terms.some(t=>[t,...(WORDS[t]||[])].some(word=>hay.includes(normalize(word))))}
+
 function msg(s){el("status").textContent=s}
 function warn(s){el("notice").textContent=s;el("notice").style.display="block"}
 function fit(){if(!w||!h)return;const cw=vp.clientWidth,ch=vp.clientHeight;min=Math.min(cw/w,ch/h);max=Math.max(min,Math.min(2,Math.max(1,6000/w)));scale=min;tx=(cw-w*scale)/2;ty=(ch-h*scale)/2;paint()}
