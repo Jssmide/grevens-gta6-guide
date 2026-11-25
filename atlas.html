@@ -134,7 +134,7 @@ function updateFindList(){
  const query=el('findQuery').value.trim(),category=el('findCategory').value,chapter=Number(el('searchChapter').value),hide=el('searchSpoilers').checked;
  const own=getPins().filter(p=>(category==='all'||p.category===category)&&pinMatches(p,query)).map(p=>({...p,isOwn:true}));
  const guides=GUIDE_ITEMS.filter(g=>(category==='all'||guideType(g)===category)&&(!hide||!g.chapter||Number(g.chapter)<=chapter)&&matchesGuide(g,query)).map(g=>({...g,isOwn:false}));
- const items=[...own,...guides],root=el('searchResults');root.replaceChildren();
+ const items=[...own,...guides.sort((a,b)=>Number(b.id?.startsWith('new-'))-Number(a.id?.startsWith('new-')))],root=el('searchResults');root.replaceChildren();
  const hidden=hide?GUIDE_ITEMS.filter(g=>g.chapter&&Number(g.chapter)>chapter&&matchesGuide(g,query)).length:0;
  el('findCount').textContent=items.length+' results · '+own.length+' saved map pins'+(hidden?' · '+hidden+' later chapter guides hidden':'');
  for(const item of items){
