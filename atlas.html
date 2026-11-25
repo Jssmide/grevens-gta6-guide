@@ -1,0 +1,158 @@
+<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0c1924"><title>GREVEN'S LEONIDA ATLAS</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#0b1822;color:#f3f7f9;font-family:-apple-system,system-ui,sans-serif}
+header{background:#0f2230;padding:13px;border-bottom:1px solid #3a5262}
+h1{font-size:19px;margin:0 0 8px}h1 strong{color:#f3be79}p{font-size:12px;line-height:1.55;color:#b8cbd8}
+button,.btn{background:#203849;color:white;border:1px solid #486475;border-radius:11px;padding:10px 12px;font:inherit;font-size:12px;cursor:pointer;text-decoration:none;display:inline-block;touch-action:manipulation}
+button.primary{background:#f3be79;color:#14212a;border-color:#f3be79;font-weight:850}
+.actions{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+#viewport{position:relative;background:#244e62;overflow:hidden;touch-action:none;height:clamp(430px,66dvh,860px);user-select:none}
+#mapImage{position:absolute;top:0;left:0;max-width:none;transform-origin:0 0;will-change:transform;pointer-events:none}
+#empty{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;padding:25px;text-align:center;color:#e1eaf0;background:linear-gradient(140deg,#1c4e68,#143347)}
+#empty>div{max-width:330px}#empty b{font-size:23px}#empty p{color:#c1d5dd}
+.zooms{position:absolute;right:10px;top:10px;display:grid;gap:7px}
+.zooms button{font-size:19px;font-weight:850;width:42px;height:42px;background:#12293adf}
+#status{font-size:11px;color:#ffd09b;margin-top:8px}
+#help{background:#132838;border-top:1px solid #3b5262;padding:13px}
+#help a{color:#f4c68c}
+#notice{display:none;background:#5d2d34;border-radius:9px;padding:9px;font-size:12px;margin-top:8px}
+input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+#choose{background:#f3be79;color:#14212a;font-weight:850}
+
+/* Interactive findings: aligned to original-map pixels, not screen position */
+.tools2{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.tools2 button{padding:9px 11px}
+.tools2 button.selected{background:#f3be79;color:#14212a;font-weight:850}
+.searchbox{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.searchbox input{min-width:0;flex:1;background:#132d3e;color:#fff;border:1px solid #4b6878;border-radius:9px;padding:10px}
+#pinLayer{position:absolute;top:0;left:0;transform-origin:0 0;pointer-events:none}
+#pinLayer button{position:absolute;width:34px;height:34px;border:2px solid #ffd397;border-radius:50%;background:#092434ed;display:grid;place-items:center;padding:0;box-shadow:0 3px 12px #061018bb;pointer-events:auto;font-size:16px;touch-action:manipulation;transform-origin:50% 100%}
+#pinLayer button.guide{border-color:#7fe2ad}
+#foundPanel{padding:12px;background:#162f40;border-top:1px solid #405a6b}
+#foundPanel h2{font-size:15px;margin:0 0 8px}
+#foundPanel p{margin:6px 0}
+#foundPanel .pinrow{display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:8px 2px;border-bottom:1px solid #365064}
+#foundPanel .pinrow button{font-size:12px;padding:7px 9px}
+#pinEditor{padding:12px;background:#1a3243;border-top:1px solid #4b6576}
+#pinEditor[hidden],#foundPanel[hidden]{display:none}
+#pinEditor label{display:block;color:#c7d6de;font-size:12px;margin:7px 0}
+#pinEditor input,#pinEditor textarea,#pinEditor select{display:block;width:100%;padding:10px;border:1px solid #587083;background:#0b2130;border-radius:9px;color:white;font:inherit}
+#pinEditor textarea{min-height:70px}
+#pinEditor .actions{margin-top:9px}
+#searchResults{margin-top:6px;max-height:150px;overflow:auto}
+#searchResults button{width:100%;text-align:left;margin:3px 0}
+#findCount{font-size:11px;color:#ffd09b;margin:7px 0}
+html,body{height:100%;overflow:hidden}#viewport{position:fixed;inset:0;height:100dvh;min-height:0}header{position:fixed;top:0;left:0;right:0;z-index:12;padding:calc(9px + env(safe-area-inset-top)) 10px 4px;background:linear-gradient(#081624eF,#081624b9,transparent)}header h1{font-size:18px;margin:0}header>p,header>.actions,header>#status,header>#notice{display:none!important}.tools2{position:fixed;left:8px;right:8px;bottom:calc(9px + env(safe-area-inset-bottom));z-index:14;display:flex;gap:7px;flex-wrap:nowrap}.tools2 button{flex:1;font-size:12px;white-space:nowrap;padding:12px 5px;background:#152d40ed}.tools2 button:first-child{background:#f3be79;color:#142434;font-weight:850}#findPanel,#foundPanel,#pinEditor{position:fixed;left:0;right:0;bottom:0;max-height:84dvh;overflow:auto;z-index:25;border:1px solid #456273;background:#102838fa;box-shadow:0 -12px 40px #000a;border-radius:22px 22px 0 0;padding:15px 14px calc(18px + env(safe-area-inset-bottom))}#findPanel[hidden],#foundPanel[hidden],#pinEditor[hidden]{display:none!important}#findPanel .panelHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}#findPanel .panelHead strong{font-size:19px}#findPanel .searchOptions{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:12px 0;font-size:12px;color:#cadbe6}#findPanel .searchOptions select{padding:7px;border-radius:9px;background:#1b394a;color:white}#searchResults{max-height:none;overflow:visible}#searchResults button{display:block;text-align:left;width:100%;padding:12px;border-radius:11px;border:1px solid #426071;background:#16364a;margin:7px 0}#searchResults button strong{display:block;font-size:14px}#searchResults button small{color:#e5c08e}#searchResults button p{font-size:12px;color:#cbdae3;margin:5px 0}#help{display:none}.zooms{z-index:8;top:31%}@media(min-width:750px){#findPanel,#foundPanel,#pinEditor{left:12px;right:auto;width:min(480px,95vw);bottom:12px;border-radius:20px}}</style></head><body>
+<header><h1>🎮 GREVEN'S <strong>LEONIDA ATLAS</strong></h1>
+<p>Visa Rockstars officiella högupplösta karta direkt på iPhone. Du väljer bilden en gång; den sparas lokalt i din webbläsare, inte på vår server.</p>
+<div class="actions">
+<label class="btn" id="choose" for="file">📂 Välj officiell kartbild</label>
+<input id="file" type="file" accept="image/jpeg,image/png,image/webp">
+<a class="btn" href="https://www.rockstargames.com/VI/media" target="_blank" rel="noopener">Rockstar – hämta kartan ↗</a>
+<button type="button" id="clear">Ta bort sparad bild</button>
+</div>
+<div class="tools2"><button type="button" id="findToggle">🔎 Sök allt</button><button type="button" id="newPin">📍 Markera fynd</button><button type="button" id="pinToggle">⭐ Nålar av/på</button></div><div id="findPanel" hidden><div class="panelHead"><strong>Search / Sök hela guiden</strong><button type="button" id="closeFind">✕</button></div><div class="searchbox"><input id="findQuery" type="search" placeholder="bil, car, pistol, gun, cash, bunker…"><select id="findCategory" style="background:#132d3e;color:white;border-radius:9px;border:1px solid #4b6878"><option value="all">All types</option><option value="weapon">Weapons</option><option value="car">Vehicles</option><option value="money">Money</option><option value="secret">Secrets</option><option value="place">Places</option><option value="code">Codes / Cheats</option></select></div><div class="searchOptions"><label>Chapter <select id="searchChapter"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">After story</option></select></label><label><input id="searchSpoilers" type="checkbox" checked> Hide later chapter guides</label></div><div id="findCount"></div><div id="searchResults"></div></div><div id="status">Söker efter tidigare sparad karta…</div><div id="notice"></div>
+</header>
+<div id="viewport">
+<img id="mapImage" alt="Fullständig officiell Leonida-karta" style="display:none"><div id="pinLayer"></div>
+<div id="empty"><div><b>Hela Leonida – en enda karta</b><p>Välj din tidigare nedladdade Rockstar-karta om den inte redan finns sparad.</p><label for="file" style="background:#f3be79;color:#172434;font-weight:800;border-radius:10px;padding:12px;display:inline-block">Välj kartbild</label></div></div>
+<div class="zooms"><button id="plus" type="button">+</button><button id="minus" type="button">−</button><button id="reset" type="button">⤢</button></div></div>
+<div id="pinEditor" hidden><strong>Save finding on map</strong><label>Name<input id="pinName" maxlength="90" placeholder="e.g. Secret gun / rare car"></label><label>Category<select id="pinCategory"><option value="weapon">🔫 Weapon</option><option value="car">🚗 Vehicle</option><option value="money">💰 Money</option><option value="secret">🗝️ Secret</option><option value="place">📍 Place</option></select></label><label>Notes<textarea id="pinNotes" maxlength="500" placeholder="How to find it / mission / instructions"></textarea></label><div class="actions"><button type="button" id="pinSave" class="primary">Save pin</button><button type="button" id="pinCancel">Cancel</button></div></div><div id="foundPanel" hidden><h2>My findings</h2><div id="foundList"></div></div><div id="help"><strong>Karta från Rockstar · Engelska platsnamn</strong><p>Det här är själva kartbilden, inte vår tidigare communityrekonstruktion. Den har bättre originaldetalj, men är fortfarande en bild: den visar inte automatiskt var hemliga vapen ligger. Använd appens guider för sökbara fynd.</p><p>Obs! Din kartbild lagras bara i Safari på denna enhet. Om iPhone rensar webbplatsdata kan du behöva välja bilden igen.</p></div>
+<script src="atlas-data.js"></script><script>
+(function(){
+"use strict";
+var doc=document, el=id=>doc.getElementById(id),vp=el("viewport"),img=el("mapImage"),empty=el("empty");
+var w=0,h=0,scale=1,min=0.1,max=4,tx=0,ty=0,points=new Map(),gesture=null,url=null;
+
+let addPin=false,showPins=true,moved=false,pending=null,selectedId=null;
+const PIN_KEY='greven-official-map-pins-v1';
+const ICON={weapon:'🔫',car:'🚗',money:'💰',secret:'🗝️',place:'📍'};
+const WORDS={bil:['car','vehicle','garage'],bilar:['car','vehicle','garage'],fordon:['vehicle','car'],pistol:['gun','weapon','firearm'],gevar:['gun','weapon','rifle'],vapen:['gun','weapon'],pengar:['cash','money'],hemlig:['secret','hidden'],hemliga:['secret','hidden'],bank:['money','cash'],sniper:['rifle','gun','weapon']};
+const DRAFT_KEY='greven-official-pin-draft';
+function readDraft(){try{return JSON.parse(localStorage.getItem(DRAFT_KEY)||'null')}catch(e){return null}}
+function applyDraft(){const d=readDraft();if(!d||!w)return;addPin=true;el('newPin').classList.add('selected');el('pinName').value=d.name||'';el('pinCategory').value=d.category||'place';el('pinNotes').value=d.notes||'';msg('Guide ready: tap its location on the map to save a pin.')}
+function getPins(){try{const p=JSON.parse(localStorage.getItem(PIN_KEY)||'[]');return Array.isArray(p)?p:[]}catch(e){return []}}
+function storePins(arr){try{localStorage.setItem(PIN_KEY,JSON.stringify(arr))}catch(e){warn('Could not store findings on this device')}}
+function escaped(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function normalize(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
+function pinMatches(p,q){const terms=normalize(q).split(' ').filter(x=>x.length>2&&!['jag','hur','vart','var','finns','hittar','natt','javla','ett','och'].includes(x));if(!terms.length)return true;const hay=normalize(p.name+' '+p.notes+' '+p.category);return terms.some(t=>[t,...(WORDS[t]||[])].some(word=>hay.includes(normalize(word))))}
+
+function msg(s){el("status").textContent=s}
+function warn(s){el("notice").textContent=s;el("notice").style.display="block"}
+function fit(){if(!w||!h)return;const cw=vp.clientWidth,ch=vp.clientHeight;min=Math.min(cw/w,ch/h);max=Math.max(min,Math.min(2,Math.max(1,6000/w)));scale=min;tx=(cw-w*scale)/2;ty=(ch-h*scale)/2;paint()}
+function paint(){if(!w||!h)return;const vw=vp.clientWidth,vh=vp.clientHeight;tx=w*scale<=vw?(vw-w*scale)/2:Math.max(vw-w*scale,Math.min(0,tx));ty=h*scale<=vh?(vh-h*scale)/2:Math.max(vh-h*scale,Math.min(0,ty));img.style.transform='translate3d('+tx+'px,'+ty+'px,0) scale('+scale+')';const layer=el('pinLayer');layer.style.transform='translate3d('+tx+'px,'+ty+'px,0) scale('+scale+')';renderPins();msg(Math.round(scale/min*100)+' % zoom · '+w+' × '+h+' pixlar')}
+function zoom(f,cx=vp.clientWidth/2,cy=vp.clientHeight/2){const old=scale;scale=Math.max(min,Math.min(max,scale*f));const k=scale/old;tx=cx-(cx-tx)*k;ty=cy-(cy-ty)*k;paint()}
+function showBlob(blob,save){if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(blob);img.onload=()=>{w=img.naturalWidth;h=img.naturalHeight;img.style.width=w+'px';img.style.height=h+'px';img.style.display='block';empty.style.display='none';const layer=el('pinLayer');layer.style.width=w+'px';layer.style.height=h+'px';fit();applyDraft();if(save)saveBlob(blob)};img.onerror=()=>warn('Bilden kunde inte öppnas. Välj JPG-filen, inte ZIP-filen.');img.src=url}
+function db(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window)){reject(Error('IndexedDB saknas'));return}const r=indexedDB.open('grevens-leonida-official',1);r.onupgradeneeded=()=>r.result.createObjectStore('files');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
+async function saveBlob(blob){try{const d=await db(),t=d.transaction('files','readwrite');t.objectStore('files').put(blob,'official');t.oncomplete=()=>d.close();t.onerror=()=>warn('Kunde inte spara bilden permanent. Den fungerar ändå tills sidan stängs.')}catch(e){warn('Kunde inte lagra bilden på iPhone: '+e.message)}}
+async function restore(){try{const d=await db();const r=d.transaction('files','readonly').objectStore('files').get('official');r.onsuccess=()=>{if(r.result)showBlob(r.result,false);else msg('Välj officiell kartbild för att börja.');d.close()};r.onerror=()=>msg('Välj officiell kartbild för att börja.')}catch(e){msg('Välj officiell kartbild för att börja.')}}
+
+function renderPins(){
+ const layer=el('pinLayer');layer.replaceChildren();
+ if(!w||!h||!showPins)return;
+ for(const p of getPins()){
+  const b=document.createElement('button');b.type='button';b.textContent=ICON[p.category]||'📍';b.style.left=(p.x*w)+'px';b.style.top=(p.y*h)+'px';b.style.transform='translate(-50%,-100%) scale('+(1/scale)+')';b.title=p.name;b.setAttribute('aria-label',p.name);b.onclick=e=>{e.stopPropagation();selectPin(p.id)};layer.appendChild(b);
+ }
+}
+function focusPin(p){
+ if(!w||!h)return;const r=vp.getBoundingClientRect();scale=Math.max(scale,min*5);tx=r.width/2-(p.x*w*scale);ty=r.height/2-(p.y*h*scale);paint();
+}
+function selectPin(id){
+ const p=getPins().find(v=>v.id===id);if(!p)return;
+ selectedId=id;el('foundPanel').hidden=false;el('foundList').innerHTML='<div class="pinrow"><strong>'+escaped(p.name)+'</strong><span>'+ICON[p.category]+'</span></div><p>'+escaped(p.notes||'No notes')+'</p>'+(p.source?'<p><a href="'+escaped(p.source)+'" target="_blank" rel="noopener">Guide source ↗</a></p>':'')+'<div class="actions"><button type="button" id="pinGo">Go to pin</button><button type="button" id="pinRemove">Remove pin</button></div>';
+ el('pinGo').onclick=()=>focusPin(p);
+ el('pinRemove').onclick=()=>{storePins(getPins().filter(x=>x.id!==id));el('foundPanel').hidden=true;renderPins();updateFindList()};
+}
+const GUIDE_ITEMS=Array.isArray(window.GREVEN_ATLAS_GUIDES)?window.GREVEN_ATLAS_GUIDES:[];
+const guideTypes={Vapen:'weapon',Bilar:'car',Pengar:'money',Bank:'money',Hemligt:'secret',Tips:'place'};
+function guideType(g){return guideTypes[g.cat]||'place'}
+function matchesGuide(g,q){
+ const words=normalize(q).split(' ').filter(x=>x.length>2&&!['vart','finns','hittar','hur','jag','kan','natt','javla','where','find'].includes(x));
+ if(!words.length)return true;
+ const text=normalize([g.name,g.info,g.keywords,g.cat,(g.steps||[]).join(' ')].join(' '));
+ const syn={bil:['car','vehicle','garage'],pistol:['gun','weapon'],pengar:['money','cash','bank'],koder:['code','cheat'],fusk:['cheat','code'],gevär:['rifle','gun'],snajper:['sniper']};
+ return words.some(w=>[w,...(WORDS[w]||[]),...(syn[w]||[])].some(a=>text.includes(normalize(a))));
+}
+function showGuide(g){
+ const target=el('foundList');el('foundPanel').hidden=false;
+ target.innerHTML='<h2>'+escaped(g.name)+'</h2><p>'+escaped(g.info||'')+'</p>'+(g.steps?.length?'<ol>'+g.steps.map(s=>'<li>'+escaped(s)+'</li>').join('')+'</ol>':'')+'<p class="note">Ingen verifierad exakt position på denna kartbild. Markera själv när du vet platsen.</p><div class="actions"><button type="button" id="placeGuide">📍 Mark on map</button>'+(g.source?'<a href="'+escaped(g.source)+'" target="_blank" rel="noopener">Source ↗</a>':'')+'<button type="button" id="backGuide">Back</button></div>';
+ el('placeGuide').onclick=()=>{try{localStorage.setItem(DRAFT_KEY,JSON.stringify({name:g.name,category:guideType(g),notes:[g.info,...(g.steps||[])].filter(Boolean).join('\n'),source:g.source||'',chapter:g.chapter||0}))}catch(e){}el('foundPanel').hidden=true;el('findPanel').hidden=true;applyDraft()};
+ el('backGuide').onclick=()=>{el('foundPanel').hidden=true;el('findPanel').hidden=false};
+}
+function updateFindList(){
+ const query=el('findQuery').value.trim(),category=el('findCategory').value,chapter=Number(el('searchChapter').value),hide=el('searchSpoilers').checked;
+ const own=getPins().filter(p=>(category==='all'||p.category===category)&&pinMatches(p,query)).map(p=>({...p,isOwn:true}));
+ const guides=GUIDE_ITEMS.filter(g=>(category==='all'||guideType(g)===category)&&(!hide||!g.chapter||Number(g.chapter)<=chapter)&&matchesGuide(g,query)).map(g=>({...g,isOwn:false}));
+ const items=[...own,...guides],root=el('searchResults');root.replaceChildren();
+ const hidden=hide?GUIDE_ITEMS.filter(g=>g.chapter&&Number(g.chapter)>chapter&&matchesGuide(g,query)).length:0;
+ el('findCount').textContent=items.length+' results · '+own.length+' saved map pins'+(hidden?' · '+hidden+' later chapter guides hidden':'');
+ for(const item of items){
+  const b=document.createElement('button');b.type='button';
+  const title=document.createElement('strong');title.textContent=(ICON[item.category]||ICON[guideType(item)]||'📖')+' '+item.name;b.appendChild(title);
+  const small=document.createElement('small');small.textContent=item.isOwn?'📍 Your map pin':'Guide · location not verified';b.appendChild(small);
+  if(item.info){const p=document.createElement('p');p.textContent=item.info.slice(0,200);b.appendChild(p)}
+  b.onclick=()=>item.isOwn?(selectPin(item.id),focusPin(item)):showGuide(item);
+  root.appendChild(b);
+ }
+ if(!items.length){const p=document.createElement('p');p.textContent=category==='code'?'No verified cheat codes in the database yet.':'No results yet. Search bil/car, pistol/gun or pengar/money.';root.appendChild(p)}
+}
+el('newPin').onclick=()=>{if(!w){warn('Choose your Leonida map image first');return}addPin=!addPin;el('newPin').classList.toggle('selected',addPin);el('status').textContent=addPin?'Tap once on the map where your finding is.':'Pin mode cancelled.'};
+el('pinToggle').onclick=()=>{showPins=!showPins;el('pinToggle').classList.toggle('selected',showPins);renderPins()};
+el('closeFind').onclick=()=>{el('findPanel').hidden=true};el('searchChapter').onchange=updateFindList;el('searchSpoilers').onchange=updateFindList;
+el('findToggle').onclick=()=>{const p=el('findPanel');p.hidden=!p.hidden;if(!p.hidden)updateFindList()};
+el('findQuery').oninput=updateFindList;el('findCategory').onchange=updateFindList;
+el('pinCancel').onclick=()=>{pending=null;el('pinEditor').hidden=true};
+el('pinSave').onclick=()=>{if(!pending)return;const name=el('pinName').value.trim();if(!name){warn('Enter a name for the finding');return}const category=el('pinCategory').value,notes=el('pinNotes').value.trim(),p={id:'pin-'+Date.now(),x:pending.x,y:pending.y,name,category,notes,source:readDraft()?.source||'',chapter:readDraft()?.chapter||0};storePins([...getPins(),p]);try{localStorage.removeItem(DRAFT_KEY)}catch(e){}pending=null;el('pinEditor').hidden=true;renderPins();selectPin(p.id);updateFindList()};
+
+el('file').addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;if(!f.type.startsWith('image/')){warn('Du måste välja JPG-bilden ur ZIP-filen.');return}showBlob(f,true)});
+el('clear').onclick=async()=>{try{const d=await db(),t=d.transaction('files','readwrite');t.objectStore('files').delete('official');t.oncomplete=()=>d.close()}catch(e){}if(url)URL.revokeObjectURL(url);url=null;w=0;h=0;img.removeAttribute('src');img.style.display='none';empty.style.display='flex';msg('Sparad kartbild borttagen')};
+el('plus').onclick=()=>zoom(1.45);el('minus').onclick=()=>zoom(1/1.45);el('reset').onclick=fit;
+vp.addEventListener('pointerdown',e=>{if(e.target.closest('button')||!w)return;vp.setPointerCapture(e.pointerId);points.set(e.pointerId,{x:e.clientX,y:e.clientY});moved=false;if(points.size===1)gesture={mode:'pan',x:e.clientX,y:e.clientY,tx,ty};else if(points.size===2){moved=true;let p=[...points.values()];gesture={mode:'pinch',distance:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),s:scale,tx,ty,mx:(p[0].x+p[1].x)/2,my:(p[0].y+p[1].y)/2}}});
+vp.addEventListener('pointermove',e=>{if(!points.has(e.pointerId)||!gesture)return;points.set(e.pointerId,{x:e.clientX,y:e.clientY});if(points.size===2&&gesture.mode==='pinch'){moved=true;const p=[...points.values()],mx=(p[0].x+p[1].x)/2,my=(p[0].y+p[1].y)/2,r=vp.getBoundingClientRect(),newScale=Math.max(min,Math.min(max,gesture.s*Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)/Math.max(1,gesture.distance))),k=newScale/gesture.s;scale=newScale;tx=mx-r.left-(gesture.mx-r.left-gesture.tx)*k;ty=my-r.top-(gesture.my-r.top-gesture.ty)*k;paint()}else if(points.size===1&&gesture.mode==='pan'){if(Math.hypot(e.clientX-gesture.x,e.clientY-gesture.y)>7)moved=true;tx=gesture.tx+e.clientX-gesture.x;ty=gesture.ty+e.clientY-gesture.y;paint()}});
+function release(e){const place=addPin&&!moved&&points.size===1&&w&&h;points.delete(e.pointerId);if(place){const r=vp.getBoundingClientRect(),px=(e.clientX-r.left-tx)/scale/w,py=(e.clientY-r.top-ty)/scale/h;if(px>=0&&px<=1&&py>=0&&py<=1){pending={x:px,y:py};const draft=readDraft();el('pinName').value=draft?.name||'';el('pinCategory').value=draft?.category||'weapon';el('pinNotes').value=draft?.notes||'';el('pinEditor').hidden=false;el('pinEditor').scrollIntoView({behavior:'smooth',block:'nearest'});}addPin=false;el('newPin').classList.remove('selected')}if(points.size===1){let p=[...points.values()][0];gesture={mode:'pan',x:p.x,y:p.y,tx,ty}}else if(!points.size)gesture=null}
+vp.addEventListener('pointerup',release);vp.addEventListener('pointercancel',release);
+vp.addEventListener('wheel',e=>{e.preventDefault();const r=vp.getBoundingClientRect();zoom(e.deltaY<0?1.2:1/1.2,e.clientX-r.left,e.clientY-r.top)},{passive:false});
+window.addEventListener('resize',fit);
+restore();updateFindList();
+})();
+</script></body></html>
