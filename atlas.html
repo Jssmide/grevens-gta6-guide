@@ -110,7 +110,7 @@ function matchesGuide(g,q){
  const words=normalize(q).split(' ').filter(x=>x.length>2&&!['vart','finns','hittar','hur','jag','kan','natt','javla','where','find'].includes(x));
  if(!words.length)return true;
  const text=normalize([g.name,g.info,g.keywords,g.cat,(g.steps||[]).join(' ')].join(' '));
- const syn={bil:['car','vehicle','garage'],pistol:['gun','weapon'],pengar:['money','cash','bank'],koder:['code','cheat'],fusk:['cheat','code'],gevär:['rifle','gun'],snajper:['sniper']};
+ const syn={bil:['car','vehicle','garage'],bilar:['car','vehicle','garage'],car:['bil','bilar','vehicle','garage'],cars:['bil','bilar','vehicle'],vehicle:['bil','bilar'],pistol:['gun','weapon','vapen'],gun:['vapen','pistol','weapon'],guns:['vapen','pistol'],weapon:['vapen','pistol'],pengar:['money','cash','bank'],money:['pengar','cash','bank'],cash:['pengar','money'],koder:['code','cheat'],code:['kod','koder','fusk'],codes:['kod','koder','fusk'],fusk:['cheat','code'],gevär:['rifle','gun'],snajper:['sniper']};
  return words.some(w=>[w,...(WORDS[w]||[]),...(syn[w]||[])].some(a=>text.includes(normalize(a))));
 }
 function showGuide(g){
