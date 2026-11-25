@@ -42,16 +42,16 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidde
 #searchResults{margin-top:6px;max-height:150px;overflow:auto}
 #searchResults button{width:100%;text-align:left;margin:3px 0}
 #findCount{font-size:11px;color:#ffd09b;margin:7px 0}
-html,body{height:100%;overflow:hidden}#viewport{position:fixed;inset:0;height:100dvh;min-height:0}header{position:fixed;top:0;left:0;right:0;z-index:12;padding:calc(9px + env(safe-area-inset-top)) 10px 4px;background:linear-gradient(#081624eF,#081624b9,transparent)}header h1{font-size:18px;margin:0}header>p,header>.actions,header>#status,header>#notice{display:none!important}.tools2{position:fixed;left:8px;right:8px;bottom:calc(9px + env(safe-area-inset-bottom));z-index:14;display:flex;gap:7px;flex-wrap:nowrap}.tools2 button{flex:1;font-size:12px;white-space:nowrap;padding:12px 5px;background:#152d40ed}.tools2 button:first-child{background:#f3be79;color:#142434;font-weight:850}#findPanel,#foundPanel,#pinEditor{position:fixed;left:0;right:0;bottom:0;max-height:84dvh;overflow:auto;z-index:25;border:1px solid #456273;background:#102838fa;box-shadow:0 -12px 40px #000a;border-radius:22px 22px 0 0;padding:15px 14px calc(18px + env(safe-area-inset-bottom))}#findPanel[hidden],#foundPanel[hidden],#pinEditor[hidden]{display:none!important}#findPanel .panelHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}#findPanel .panelHead strong{font-size:19px}#findPanel .searchOptions{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:12px 0;font-size:12px;color:#cadbe6}#findPanel .searchOptions select{padding:7px;border-radius:9px;background:#1b394a;color:white}#searchResults{max-height:none;overflow:visible}#searchResults button{display:block;text-align:left;width:100%;padding:12px;border-radius:11px;border:1px solid #426071;background:#16364a;margin:7px 0}#searchResults button strong{display:block;font-size:14px}#searchResults button small{color:#e5c08e}#searchResults button p{font-size:12px;color:#cbdae3;margin:5px 0}#help{display:none}.zooms{z-index:8;top:31%}@media(min-width:750px){#findPanel,#foundPanel,#pinEditor{left:12px;right:auto;width:min(480px,95vw);bottom:12px;border-radius:20px}}</style></head><body>
+html,body{height:100%;overflow:hidden}#viewport{position:fixed;inset:0;height:100dvh;min-height:0}header{position:fixed;top:0;left:0;right:0;z-index:12;padding:calc(9px + env(safe-area-inset-top)) 10px 4px;background:linear-gradient(#081624eF,#081624b9,transparent)}header h1{font-size:18px;margin:0}header>p,header>.actions,header>#status,header>#notice{display:none!important}.tools2{position:fixed;left:8px;right:8px;bottom:calc(9px + env(safe-area-inset-bottom));z-index:14;display:flex;gap:7px;flex-wrap:nowrap}.tools2 button{flex:1;font-size:12px;white-space:nowrap;padding:12px 5px;background:#152d40ed}.tools2 button:first-child{background:#f3be79;color:#142434;font-weight:850}#findPanel,#foundPanel,#pinEditor{position:fixed;left:0;right:0;bottom:0;max-height:84dvh;overflow:auto;z-index:25;border:1px solid #456273;background:#102838fa;box-shadow:0 -12px 40px #000a;border-radius:22px 22px 0 0;padding:15px 14px calc(18px + env(safe-area-inset-bottom))}#findPanel[hidden],#foundPanel[hidden],#pinEditor[hidden]{display:none!important}#findPanel .panelHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}#findPanel .panelHead strong{font-size:19px}#findPanel .searchOptions{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:12px 0;font-size:12px;color:#cadbe6}#findPanel .searchOptions select{padding:7px;border-radius:9px;background:#1b394a;color:white}#searchResults{max-height:none;overflow:visible}#searchResults button{display:block;text-align:left;width:100%;padding:12px;border-radius:11px;border:1px solid #426071;background:#16364a;margin:7px 0}#searchResults button strong{display:block;font-size:14px}#searchResults button small{color:#e5c08e}#searchResults button p{font-size:12px;color:#cbdae3;margin:5px 0}#help{display:none}.zooms{z-index:8;top:31%}@media(min-width:750px){#findPanel,#foundPanel,#pinEditor{left:12px;right:auto;width:min(480px,95vw);bottom:12px;border-radius:20px}}.atlasHD{padding:11px;border-radius:12px;border:1px solid #6b5b3f;background:#172b38;margin:9px 0}.atlasHD strong{font-size:13px;color:#ffd39a}.atlasHD p{font-size:11px;color:#c3d5df;line-height:1.5;margin:8px 0}.atlasHDrow{display:flex;flex-wrap:wrap;gap:7px}.atlasHDrow a,.atlasHDrow label{color:#17212b;background:#f2bf7d;padding:9px 10px;font-size:12px;font-weight:750;border-radius:9px;text-decoration:none;cursor:pointer}.atlasHDrow label{background:#244458;color:#fff;border:1px solid #6c8591}#hdStatus{color:#f9ca8d}</style></head><body>
 <header><h1>🎮 GREVEN'S <strong>LEONIDA ATLAS</strong></h1>
 <p>Visa Rockstars officiella högupplösta karta direkt på iPhone. Du väljer bilden en gång; den sparas lokalt i din webbläsare, inte på vår server.</p>
 <div class="actions">
 <label class="btn" id="choose" for="file">📂 Välj officiell kartbild</label>
-<input id="file" type="file" accept="image/jpeg,image/png,image/webp">
+<input id="file" type="file" accept="image/jpeg,image/png,image/webp,.zip,application/zip">
 <a class="btn" href="https://www.rockstargames.com/VI/media" target="_blank" rel="noopener">Rockstar – hämta kartan ↗</a>
 <button type="button" id="clear">Ta bort sparad bild</button>
 </div>
-<div class="tools2"><button type="button" id="findToggle">🔎 Sök allt</button><button type="button" id="newPin">📍 Markera fynd</button><button type="button" id="pinToggle">⭐ Nålar av/på</button></div><div id="findPanel" hidden><div class="panelHead"><strong>Search / Sök hela guiden</strong><button type="button" id="closeFind">✕</button></div><div class="searchbox"><input id="findQuery" type="search" placeholder="bil, car, pistol, gun, cash, bunker…"><select id="findCategory" style="background:#132d3e;color:white;border-radius:9px;border:1px solid #4b6878"><option value="all">All types</option><option value="weapon">Weapons</option><option value="car">Vehicles</option><option value="money">Money</option><option value="secret">Secrets</option><option value="place">Places</option><option value="code">Codes / Cheats</option></select></div><div class="searchOptions"><label>Chapter <select id="searchChapter"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">After story</option></select></label><label><input id="searchSpoilers" type="checkbox" checked> Hide later chapter guides</label></div><div id="findCount"></div><div id="searchResults"></div></div><div id="status">Söker efter tidigare sparad karta…</div><div id="notice"></div>
+<div class="tools2"><button type="button" id="findToggle">🔎 Sök allt</button><button type="button" id="newPin">📍 Markera fynd</button><button type="button" id="pinToggle">⭐ Nålar av/på</button></div><div id="findPanel" hidden><div class="panelHead"><strong>Search / Sök hela guiden</strong><button type="button" id="closeFind">✕</button></div><div class="searchbox"><input id="findQuery" type="search" placeholder="bil, car, pistol, gun, cash, bunker…"><select id="findCategory" style="background:#132d3e;color:white;border-radius:9px;border:1px solid #4b6878"><option value="all">All types</option><option value="weapon">Weapons</option><option value="car">Vehicles</option><option value="money">Money</option><option value="secret">Secrets</option><option value="place">Places</option><option value="code">Codes / Cheats</option></select></div><div class="searchOptions"><label>Chapter <select id="searchChapter"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">After story</option></select></label><label><input id="searchSpoilers" type="checkbox" checked> Hide later chapter guides</label></div><div class="atlasHD"><strong>🔍 HD-ZOOM · Rockstar original</strong><p>Din vanliga karta är 2805 × 3840 px. Rockstars print-map är 5775 × 7900 px och ger ungefär dubbelt så fin detalj per riktning. Ladda ZIP-filen och välj den direkt här – appen packar upp JPG automatiskt.</p><div class="atlasHDrow"><a href="https://media-rockstargames-com.akamaized.net/VI/downloads/artwork_wallpapers/Leonida_Map_Poster_Printable.zip" target="_blank" rel="noopener">⬇ Hämta HD-kartan från Rockstar</a><label for="file">📂 Välj HD-ZIP/JPG</label></div><p id="hdStatus">HD-version är valfri. Dina egna kartnålar och fynd påverkas inte.</p></div><div id="findCount"></div><div id="searchResults"></div></div><div id="status">Söker efter tidigare sparad karta…</div><div id="notice"></div>
 </header>
 <div id="viewport">
 <img id="mapImage" alt="Fullständig officiell Leonida-karta" style="display:none"><div id="pinLayer"></div>
@@ -155,7 +155,49 @@ el('findQuery').oninput=updateFindList;el('findCategory').onchange=updateFindLis
 el('pinCancel').onclick=()=>{pending=null;el('pinEditor').hidden=true};
 el('pinSave').onclick=()=>{if(!pending)return;const name=el('pinName').value.trim();if(!name){warn('Enter a name for the finding');return}const category=el('pinCategory').value,notes=el('pinNotes').value.trim(),p={id:'pin-'+Date.now(),x:pending.x,y:pending.y,name,category,notes,source:readDraft()?.source||'',chapter:readDraft()?.chapter||0};storePins([...getPins(),p]);try{localStorage.removeItem(DRAFT_KEY)}catch(e){}pending=null;el('pinEditor').hidden=true;renderPins();selectPin(p.id);updateFindList()};
 
-el('file').addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;if(!f.type.startsWith('image/')){warn('Du måste välja JPG-bilden ur ZIP-filen.');return}showBlob(f,true)});
+
+async function extractZipImage(file){
+ const buffer=await file.arrayBuffer(),view=new DataView(buffer),bytes=new Uint8Array(buffer);
+ let eocd=-1;for(let i=bytes.length-22;i>=Math.max(0,bytes.length-65557);i--){if(view.getUint32(i,true)===0x06054b50){eocd=i;break}}
+ if(eocd<0)throw Error('ZIP-strukturen kunde inte hittas.');
+ const count=view.getUint16(eocd+10,true),cdOffset=view.getUint32(eocd+16,true);
+ let pos=cdOffset,target=null;
+ const td=new TextDecoder();
+ for(let i=0;i<count;i++){
+  if(view.getUint32(pos,true)!==0x02014b50)throw Error('Ogiltig ZIP-katalog.');
+  const method=view.getUint16(pos+10,true),size=view.getUint32(pos+20,true),
+        nameLen=view.getUint16(pos+28,true),extraLen=view.getUint16(pos+30,true),
+        commentLen=view.getUint16(pos+32,true),localOff=view.getUint32(pos+42,true);
+  const name=td.decode(bytes.subarray(pos+46,pos+46+nameLen));
+  if(/\.(jpg|jpeg|png)$/i.test(name)&&!name.startsWith('__MACOSX/')){target={name,method,size,localOff};break}
+  pos+=46+nameLen+extraLen+commentLen;
+ }
+ if(!target)throw Error('Ingen JPG/PNG-karta hittades i ZIP-filen.');
+ const p=target.localOff;
+ if(view.getUint32(p,true)!==0x04034b50)throw Error('Kunde inte läsa bildfilen från ZIP.');
+ const offset=p+30+view.getUint16(p+26,true)+view.getUint16(p+28,true);
+ if(offset+target.size>buffer.byteLength)throw Error('ZIP-filen är ofullständig.');
+ const compressed=bytes.slice(offset,offset+target.size);
+ let blob;
+ if(target.method===0)blob=new Blob([compressed],{type:'image/jpeg'});
+ else if(target.method===8){
+  const stream=new Blob([compressed]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+  blob=await new Response(stream).blob();
+ }else throw Error('Okänd ZIP-komprimering.');
+ return new File([blob],target.name,{type:/\.png$/i.test(target.name)?'image/png':'image/jpeg'});
+}
+async function importMap(file){
+ const status=el('hdStatus');if(status)status.textContent='Läser kartbilden…';
+ try{
+  const isZip=/\.zip$/i.test(file.name)||/zip/i.test(file.type);
+  const imgFile=isZip?await extractZipImage(file):file;
+  if(!imgFile.type.startsWith('image/'))throw Error('Välj JPG, PNG eller Rockstar ZIP.');
+  showBlob(imgFile,true);
+  if(status)status.textContent='✅ Kartan importeras och sparas lokalt på denna iPhone.';
+ }catch(err){if(status)status.textContent='⚠️ '+err.message;warn('HD-importen misslyckades: '+err.message)}
+}
+el('file').addEventListener('change',e=>{const file=e.target.files?.[0];if(file)importMap(file);e.target.value=''});
+
 el('clear').onclick=async()=>{try{const d=await db(),t=d.transaction('files','readwrite');t.objectStore('files').delete('official');t.oncomplete=()=>d.close()}catch(e){}if(url)URL.revokeObjectURL(url);url=null;w=0;h=0;img.removeAttribute('src');img.style.display='none';empty.style.display='flex';msg('Sparad kartbild borttagen')};
 el('plus').onclick=()=>zoom(1.45);el('minus').onclick=()=>zoom(1/1.45);el('reset').onclick=fit;
 vp.addEventListener('pointerdown',e=>{if(e.target.closest('button')||!w)return;vp.setPointerCapture(e.pointerId);points.set(e.pointerId,{x:e.clientX,y:e.clientY});moved=false;if(points.size===1)gesture={mode:'pan',x:e.clientX,y:e.clientY,tx,ty};else if(points.size===2){moved=true;let p=[...points.values()];gesture={mode:'pinch',distance:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),s:scale,tx,ty,mx:(p[0].x+p[1].x)/2,my:(p[0].y+p[1].y)/2}}});
